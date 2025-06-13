@@ -1,0 +1,17 @@
+OPEN CMD
+type "ipconfig"
+enter
+
+Copy your IPV4 Address 
+then open your browser
+
+paste it like this
+
+
+
+ip:2099
+
+Exmaple
+192.168.0.1:2099
+
+ENJOY

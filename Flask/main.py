@@ -206,18 +206,34 @@ def home():
     if request.method == 'POST': # type: ignore
         if 'aimbotscan' in request.form: # type: ignore
             HEADLOAD()
-            alert_message = "Command : Load Aimbot"
+            alert_message = "Command : Load HeadShot"
             alert_type = "primary"
+
         elif 'aimbotEnabled' in request.form: # type: ignore
             HEADON()
-            alert_message = "Command : Enable Aimbot"
+            alert_message = "Command : Enable HeadShot"
             alert_type = "primary"
 
         elif 'aimbotdisable' in request.form: # type: ignore # type: ignore
             HEADOFF()
-            alert_message = "Command : Disable Aimbot"
+            alert_message = "Command : Disable HeadShot"
             alert_type = "primary"
 
+        elif 'aimbotscanv2' in request.form: # type: ignore
+            HEADLOADV2()
+            alert_message = "Command : Load HeadShot V2"
+            alert_type = "primary"
+
+        elif 'aimbotenablev2' in request.form: # type: ignore # type: ignore
+            HEADONV2()
+            alert_message = "Command : Enable HeadShot V2"
+            alert_type = "primary"
+
+        elif 'aimbotdisablev2' in request.form: # type: ignore # type: ignore
+            HEADOFFV2()
+            alert_message = "Command : Disable HeadShot V2"
+            alert_type = "primary"
+#======================= MISC ==============================
         elif 'noRecoilOn' in request.form: # type: ignore
             NoRecoilOn()
             alert_message = "Command : Enable No Recoil"

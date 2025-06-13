@@ -39,17 +39,46 @@ def HEADLOAD():
             aimbot_addresses = pattern_scan_all(proc.process_handle, entity_pattern, return_multiple=True)
 
             if aimbot_addresses:
-                print("Aimbot Loaded")
+                print("HeadShot Loaded")
                 
             else:
-                print("\033[31m[!]\033[0m Aimbot Not Found")
+                print("\033[31m[!]\033[0m HeadShot Not Found")
     
     except:
         print("")
     finally:
         if proc:
             proc.close_process()
-    return "Fitur Berhasil Di Load"
+    return "HeadShot Loaded"
+
+
+def HEADLOADV2():
+    try:
+        # Open the process
+        proc = Pymem("HD-Player")
+    except pymem.exception.ProcessNotFound:
+        return
+
+    try:
+        if proc:
+            print("\033[31m[>]\033[0m Searching Entity...")
+            # Scan for entities
+            global aimbot_addresses
+            entity_pattern = mkp("01 00 00 00 00 00 00 00 ?? ?? ?? ?? 00 00 00 00 ?? ?? ?? ?? 01 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 01")
+            aimbot_addresses = pattern_scan_all(proc.process_handle, entity_pattern, return_multiple=True)
+
+            if aimbot_addresses:
+                print("HeadShot V2 Loaded")
+                
+            else:
+                print("\033[31m[!]\033[0m HeadShot Not Found")
+    
+    except:
+        print("")
+    finally:
+        if proc:
+            proc.close_process()
+    return "HeadShot Loaded"
     
 
 
@@ -83,9 +112,43 @@ def HEADON():
         if proc:
             proc.close_process()
 
-    return "AIMBOT HEAD ON"
+    return "HeadShot Legit ON"
 
-# def HEADOFF():
+def HEADONV2():
+    try:
+        proc = Pymem("HD-Player")
+    
+        if proc:
+            global original_value
+            original_value = []
+
+            for current_entity in aimbot_addresses:
+                # Save original values before overwriting
+                original_2A = read_bytes(proc.process_handle, current_entity + 0x2A, 4)
+                original_AA = read_bytes(proc.process_handle, current_entity + 0x158, 4)
+
+                original_value.append((current_entity, original_2A, original_AA))
+
+                # Read values from source offsets
+                value_2A = read_bytes(proc.process_handle, current_entity + 0x2A, 4)
+                value_AA = read_bytes(proc.process_handle, current_entity + 0x158, 4)
+
+                # Write those values to destination offsets
+                write_bytes(proc.process_handle, current_entity + 0x26, value_2A, len(value_2A))    
+                write_bytes(proc.process_handle, current_entity + 0x154, value_AA, len(value_AA))    
+
+    except pymem.exception.ProcessNotFound:
+        print("Process not found")
+        return
+    finally:
+        if proc:
+            proc.close_process()
+
+    return "HeadShot Legit V2 ON"
+
+
+
+def HEADOFF():
     try:
         proc = Pymem("HD-Player")
         
@@ -97,7 +160,7 @@ def HEADON():
 
                 # Restore original values to source offsets
                 write_bytes(proc.process_handle, entity_address + 0x2A, original_2A, len(original_2A))
-                write_bytes(proc.process_handle, entity_address + 0xAA, original_AA, len(original_AA))
+                write_bytes(proc.process_handle, entity_address + 0x158, original_AA, len(original_AA))
 
     except pymem.exception.ProcessNotFound:
         print("Process not found")
@@ -106,30 +169,21 @@ def HEADON():
         if proc:
             proc.close_process()
 
-    return "AIMBOT HEAD OFF"
+    return "HeadShot Legit OFF"
 
-def HEADOFF():
+def HEADOFFV2():
     try:
         proc = Pymem("HD-Player")
-    
-        if proc:
-            global original_value
-            original_value = []
+        
+        if original_value:
+            for i in original_value:
+                entity_address = i[0]
+                original_2A = i[1]
+                original_AA = i[2]
 
-            for current_entity in aimbot_addresses:
-                # Save original values before overwriting
-                original_2A = read_bytes(proc.process_handle, current_entity + 0x2A, 4)
-                original_AA = read_bytes(proc.process_handle, current_entity + 0x154, 4)
-
-                original_value.append((current_entity, original_2A, original_AA))
-
-                # Read values from source offsets
-                value_2A = read_bytes(proc.process_handle, current_entity + 0x2A, 4)
-                value_AA = read_bytes(proc.process_handle, current_entity + 0x154, 4)
-
-                # Write those values to destination offsets
-                write_bytes(proc.process_handle, current_entity + 0x26, value_2A, len(value_2A))    
-                write_bytes(proc.process_handle, current_entity + 0x158, value_AA, len(value_AA))    
+                # Restore original values to source offsets
+                write_bytes(proc.process_handle, entity_address + 0x2A, original_2A, len(original_2A))
+                write_bytes(proc.process_handle, entity_address + 0x158, original_AA, len(original_AA))
 
     except pymem.exception.ProcessNotFound:
         print("Process not found")
@@ -138,7 +192,7 @@ def HEADOFF():
         if proc:
             proc.close_process()
 
-    return "AIMBOT HEAD OFF"
+    return "HeadShot Legit V2 OFF"
 
 
 def SniperScopeon():
