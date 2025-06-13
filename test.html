@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BRUUUH CHEATS</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #0d0d0d;
+            color: #f1f1f1;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 450px;
+            margin: 50px auto;
+            padding: 20px;
+            background: linear-gradient(145deg, #222, #111);
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        h2 {
+            color: #e80101;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            background: #1a1a1a;
+            padding: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .tabs button {
+            flex-grow: 1;
+            padding: 12px;
+            background: linear-gradient(145deg, #444, #333);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .tabs button:hover {
+            background: linear-gradient(145deg, #555, #444);
+        }
+
+        .tabs button.active {
+            background: linear-gradient(145deg, #e80101, #c0392b);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.7);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .control {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 15px 0;
+        }
+
+        .control p {
+            margin: 0;
+            text-align: left;
+            flex-grow: 1;
+        }
+
+        button, select {
+            padding: 10px;
+            background: linear-gradient(145deg, #e80101, #c0392b);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 5px;
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);
+        }
+
+        button:hover {
+            background: linear-gradient(145deg, #c0392b, #e80101);
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.7);
+        }
+
+        .load-button {
+            padding: 10px 30px; 
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.4);
+        }
+
+        .keybinds {
+            margin-top: 20px;
+        }
+
+        .keybinds div {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        /* Console styling */
+        .console {
+            margin-top: 20px;
+            padding: 10px;
+            background: #222;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            text-align: left;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .console p {
+            color: #27ae60; /* Green text for console messages */
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            font-size: 16px;
+            display: none;
+            transition: opacity 0.5s ease;
+            opacity: 0;
+        }
+
+        /* Show notification */
+        .notification.show {
+            display: block;
+            opacity: 1;
+        }
+
+        
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>BRUUUH CHEATS</h2>
+    <h3>Streamer Panel 2.3</h3>
+
+
+    <div class="tabs">
+        <button class="tab-button active" data-tab="aimbot">Aimbot</button>
+        <button class="tab-button" data-tab="esp">ESP</button>
+        <button class="tab-button" data-tab="settings">Settings</button>
+    </div>
+<form method="post">
+    <div id="aimbot" class="tab-content active">
+        <div class="control">
+            <p>Aimbot Load</p>
+            <button name = "aimbotscan" class="load-button">Load</button>
+        </div>
+
+        <div class="control">
+            <p>Aimbot Head</p>
+            <button name = "aimbotEnabled" class="Enabled-button">Enabled</button>
+            <button name = "aimbotdisable" class="disable-button">Disable</button>
+        </div>
+
+        <div class="control">
+            <p>Sniper Scope</p>
+            <button name = "sniperscopeon" class="Enabled-button">Enabled</button>l
+            <button name = "sniperscopeoff" class="disable-button">Disable</button>
+        </div>
+
+        <div class="control">
+            <p>Sniper Switch</p>
+            <button name = "sniperswitchon" class="Enabled-button">Enabled</button>
+            <button name = "sniperswitchoff" class="disable-button">Disable</button>
+        </div>
+        <!-- Keybinds -->
+        <div class="keybinds">
+            <p>Key Binds</p>
+            <div>
+                <label>Aimbot Load: </label>
+                <button class="keybind-button">F4</button>
+            </div>
+            <div>
+                <label>Aimbot Head: </label>
+                <button class="keybind-button">F5</button>
+            </div>
+            <div>
+                <label>Aimbot Disable: </label>
+                <button class="keybind-button">F6</button>
+            </div>
+            
+        </div>
+    </div>
+
+    <div id="esp" class="tab-content">
+        <div class="control">
+            <p>ESP BluePink</p>
+            <button name = "charmsrgb" class="Enabled-button">Enabled</button>
+           
+        </div>
+    </div>
+<div id="settings" class="tab-content">
+    
+        <div class="control">
+            <p>Clear Console</p>
+            <button onclick="clearConsole()">Clear</button>
+        </div>
+    </div>
+</form>
+    <div class="console" id="console-log"></div>
+</div>
+
+<script>
+    // Tab switching functionality
+    const tabButtons = document.querySelectorAll('.tab-button');
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            const activeTab = document.getElementById(button.dataset.tab);
+            activeTab.classList.add('active');
+        });
+    });
+
+
+    // Save logs to localStorage
+    function saveLogToLocalStorage(log) {
+        try {
+            let logs = JSON.parse(localStorage.getItem('consoleLogs')) || [];
+            logs.push(log);
+            localStorage.setItem('consoleLogs', JSON.stringify(logs));
+        } catch (error) {
+            console.error("Error saving log to localStorage:", error);
+        }
+    }
+
+    // Load logs from localStorage
+    function loadLogsFromLocalStorage() {
+        try {
+            const logs = JSON.parse(localStorage.getItem('consoleLogs')) || [];
+            const consoleLog = document.getElementById('console-log');
+            consoleLog.innerHTML = ""; // Clear current display
+            logs.forEach(log => {
+                const newLine = document.createElement('p');
+                newLine.textContent = log;
+                consoleLog.appendChild(newLine);
+            });
+            consoleLog.scrollTop = consoleLog.scrollHeight; // Scroll to the bottom
+        } catch (error) {
+            console.error("Error loading logs from localStorage:", error);
+        }
+    }
+
+    // Log to console with timestamp and save to localStorage
+    function logToConsole(message) {
+        const consoleLog = document.getElementById('console-log');
+        const newLine = document.createElement('p');
+        const time = new Date().toLocaleTimeString();
+        newLine.textContent = `[${time}] ${message}`;
+        consoleLog.appendChild(newLine);
+        consoleLog.scrollTop = consoleLog.scrollHeight; // Scroll to the bottom
+
+        // Save to localStorage
+        saveLogToLocalStorage(`[${time}] ${message}`);
+    }
+
+    // Clear logs from the console and localStorage
+    function clearConsole() {
+        const consoleLog = document.getElementById('console-log');
+        consoleLog.innerHTML = ''; // Clear the console log display
+        localStorage.removeItem('consoleLogs'); // Clear localStorage
+        logToConsole('Console cleared');
+    }
+
+    // Load logs when page loads
+    window.onload = function() {
+        loadLogsFromLocalStorage();
+    };
+
+
+    // Event listeners for Enabled and disable buttons
+    const EnabledButtons = document.querySelectorAll('.Enabled-button');
+    const disableButtons = document.querySelectorAll('.disable-button');
+    
+    EnabledButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            logToConsole(`${button.previousElementSibling.textContent} Enabledd`);
+        });
+    });
+    
+    disableButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            logToConsole(`${button.previousElementSibling.textContent} disabled`);
+        });
+    });
+
+    // Load button functionality
+    const loadButton = document.querySelector('.load-button');
+    loadButton.addEventListener('click', () => {
+        logToConsole('Command : Load Aimbot');
+    });
+
+    // Log to console with timestamp
+    function logToConsole(message) {
+        const consoleLog = document.getElementById('console-log');
+        const newLine = document.createElement('p');
+        const time = new Date().toLocaleTimeString();
+        newLine.textContent = `[${time}] ${message}`;
+        consoleLog.appendChild(newLine);
+        consoleLog.scrollTop = consoleLog.scrollHeight; // Scroll to the bottom
+    }
+    
+     // keybind
+    document.addEventListener('keydown', function(event) {
+        if (event.code === 'F5') {
+            event.preventDefault(); // Prevents default F5 refresh behavior
+            logToConsole('Aimbot Enabledd via keybind');
+        }
+        if (event.code === 'F6') {
+            logToConsole('Aimbot disabled via Keybind');
+        }
+    });
+
+    // Placeholder functions for Reset and Save
+    function resetSettings() {
+        logToConsole('Settings have been reset');
+    }
+
+    function saveSettings() {
+        logToConsole('Settings have been saved');
+    }
+</script>
+
+</body>
+</html>
