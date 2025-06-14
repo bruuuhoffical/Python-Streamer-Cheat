@@ -68,21 +68,25 @@
         .emulator-buttons {
             display: flex;
             gap: 6px;
+            border: 1px solid rgb(75, 99, 206);
+            border-radius: 4px;
+            overflow: hidden;
         }
 
         .emulator-buttons button {
             padding: 8px 14px;
             background-color: transparent;
-            color: #5C6BC0;
-            border: 1px solid #5C6BC0;
+            color: rgb(75, 99, 206);
+            border: none;
             cursor: pointer;
             font-size: 14px;
-            border-radius: 4px;
             font-weight: 500;
+            flex: 1;
         }
 
-        .emulator-buttons button:hover {
-            background-color: rgba(92,107,192,0.1);
+        .emulator-buttons button.active {
+            background-color: rgb(75, 99, 206);
+            color: #fff;
         }
 
         .tabs {
@@ -103,7 +107,7 @@
         }
 
         .tabs button.active {
-            border-bottom: 2px solid #5C6BC0;
+            border-bottom: 2px solid rgb(75, 99, 206);
             color: #fff;
         }
 
@@ -129,7 +133,7 @@
         .panel {
             border: 1px solid #333;
             background-color: #222;
-            padding: 8px 12px;
+            padding: 12px;
             margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
@@ -137,31 +141,72 @@
             border-radius: 6px;
         }
 
-        .panel p {
+        .panel-left {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .panel-left p {
             margin: 0;
             font-size: 15px;
             color: #ccc;
             font-weight: 500;
         }
 
-        .panel .buttons-row {
-            display: flex;
-            gap: 10px;
+        .function-label {
+            font-size: 11px;
+            color: #888;
+            margin-top: 4px;
         }
 
-        button {
+        .panel button {
             padding: 8px 14px;
             background-color: transparent;
-            color: #5C6BC0;
-            border: 1px solid #5C6BC0;
+            color: rgb(75, 99, 206);
+            border: 1px solid rgb(75, 99, 206);
             cursor: pointer;
             font-size: 14px;
             font-weight: 500;
             border-radius: 4px;
         }
 
-        button:hover {
-            background-color: rgba(92,107,192,0.1);
+        .panel button:hover {
+            background-color: rgba(75, 99, 206, 0.1);
+        }
+
+        /* Filled buttons */
+        .panel button[name$="On"], 
+        .panel button[name$="Enabled"], 
+        .panel button[name$="enable"], 
+        .panel button[name="startchams"], 
+        .panel button[name^="scopeTracking"][name$="On"], 
+        .panel button[name="aimbotscan"], 
+        .panel button[name="aimbotscanv2"], 
+        .panel button[name="aimbotenablev2"], 
+        .panel button[name="chamsmenuv1"], 
+        .panel button[name="chamsblue"],
+        .panel button[name="chamsmenuv2"], 
+        .panel button[name="chamsglow"], 
+        .panel button[name="maphdr"] {
+            background-color: rgb(75, 99, 206);
+            color: #fff;
+        }
+
+        .panel button[name$="On"]:hover, 
+        .panel button[name$="Enabled"]:hover, 
+        .panel button[name$="enable"]:hover, 
+        .panel button[name="startchams"]:hover, 
+        .panel button[name^="scopeTracking"][name$="On"]:hover, 
+        .panel button[name="aimbotscan"]:hover, 
+        .panel button[name="aimbotscanv2"]:hover, 
+        .panel button[name="aimbotenablev2"]:hover, 
+        .panel button[name="chamsblue"]:hover,
+        .panel button[name="chamsmenuv1"]:hover, 
+        .panel button[name="chamsmenuv2"]:hover, 
+        .panel button[name="chamsglow"]:hover, 
+        .panel button[name="maphdr"]:hover {
+            background-color: rgb(65, 85, 180);
         }
 
         /* Console style */
@@ -186,17 +231,17 @@
 
 <div class="container">
     <h2>BRUUUH CHEATS</h2>
-    <h3>Streamer Panel 2.5</h3>
+    <h3>Streamer Panel 2.6</h3>
 
     <div class="status-panel">
-        Status: <span>Online</span> • v2.5 - -- ms<br>
+        Status: <span>Online</span> • v2.6 - -- ms<br>
         Connected to: BRUUUH CHEATS
     </div>
 
     <div class="emulator-row">
         <label>Emulator</label>
-        <div class="emulator-buttons">
-            <button>32-bit</button>
+        <div class="emulator-buttons" id="emulator-toggle">
+            <button class="active">32-bit</button>
             <button>64-bit</button>
         </div>
     </div>
@@ -213,12 +258,18 @@
     <!-- AIMBOT TAB -->
     <div id="aimbot" class="tab-content active">
         <div class="panel">
-            <p>Load Headshot</p>
+            <div class="panel-left">
+                <p>Load Headshot</p>
+                <div class="function-label">Scans for headshot AOB</div>
+            </div>
             <button name="aimbotscan">Load</button>
         </div>
 
         <div class="panel">
-            <p>Headshot Legit</p>
+            <div class="panel-left">
+                <p>Headshot Legit</p>
+                <div class="function-label">Activates headshot aimbot</div>
+            </div>
             <div class="buttons-row">
                 <button name="aimbotEnabled">Enable</button>
                 <button name="aimbotdisable">Disable</button>
@@ -226,12 +277,18 @@
         </div>
 
         <div class="panel">
-            <p>Load Headshot V2</p>
+            <div class="panel-left">
+                <p>Load Headshot V2</p>
+                <div class="function-label">Scans for headshot AOB</div>
+            </div>
             <button name="aimbotscanv2">Load</button>
         </div>
 
         <div class="panel">
-            <p>Headshot Legit V2</p>
+            <div class="panel-left">
+                <p>Headshot Legit V2</p>
+                <div class="function-label">Activates headshot aimbot v2</div>
+            </div>
             <div class="buttons-row">
                 <button name="aimbotenablev2">Enable</button>
                 <button name="aimbotdisablev2">Disable</button>
@@ -241,9 +298,11 @@
 
     <!-- MISC TAB -->
     <div id="misc" class="tab-content">
-
         <div class="panel">
-            <p>No Recoil</p>
+            <div class="panel-left">
+                <p>No Recoil</p>
+                <div class="function-label">Removes weapon recoil</div>
+            </div>
             <div class="buttons-row">
                 <button name="noRecoilOn">Enable</button>
                 <button name="noRecoilOff">Disable</button>
@@ -251,7 +310,10 @@
         </div>
 
         <div class="panel">
-            <p>Scope Tracking 2X</p>
+            <div class="panel-left">
+                <p>Scope Tracking 2X</p>
+                <div class="function-label">Improves 2x scope tracking</div>
+            </div>
             <div class="buttons-row">
                 <button name="scopeTracking2xOn">Enable</button>
                 <button name="scopeTracking2xOff">Disable</button>
@@ -259,42 +321,73 @@
         </div>
 
         <div class="panel">
-            <p>Scope Tracking 4X</p>
+            <div class="panel-left">
+                <p>Scope Tracking 4X</p>
+                <div class="function-label">Improves 4x scope tracking</div>
+            </div>
             <div class="buttons-row">
                 <button name="scopeTracking4xOn">Enable</button>
                 <button name="scopeTracking4xOff">Disable</button>
             </div>
         </div>
+
+        
     </div>
 
     <!-- VISUALS TAB -->
     <div id="visuals" class="tab-content">
         <div class="panel">
-            <p>Start Chams</p>
+            <div class="panel-left">
+                <p>Start Chams</p>
+                <div class="function-label">Starts Chams visual effect</div>
+            </div>
             <button name="startchams">Start</button>
         </div>
         <div class="panel">
-            <p>Chams Menu V1</p>
+            <div class="panel-left">
+                <p>Chams Menu V1</p>
+                <div class="function-label">Open Location Menu</div>
+            </div>
             <button name="chamsmenuv1">Inject</button>
         </div>
         <div class="panel">
-            <p>Chams Menu V2</p>
+            <div class="panel-left">
+                <p>Chams Menu V2</p>
+                <div class="function-label">Open Location Menu V2</div>
+            </div>
             <button name="chamsmenuv2">Inject</button>
         </div>
         <div class="panel">
-            <p>Chams Glow</p>
+            <div class="panel-left">
+                <p>Glow Hack</p>
+                <div class="function-label">Make Enemies Glow</div>
+            </div>
             <button name="chamsglow">Inject</button>
         </div>
         <div class="panel">
-            <p>HDR Map</p>
+            <div class="panel-left">
+                <p>Blue Hack</p>
+                <div class="function-label">Make Enemies Blue</div>
+            </div>
+            <button name="chamsblue">Inject</button>
+        </div>
+        <div class="panel">
+            <div class="panel-left">
+                <p>HDR Map</p>
+                <div class="function-label">Make Enemies Glow</div>
+            </div>
             <button name="maphdr">Inject</button>
         </div>
+        
     </div>
 
     <!-- SETTINGS TAB -->
     <div id="settings" class="tab-content">
         <div class="panel">
-            <p>Clear Console</p>
+            <div class="panel-left">
+                <p>Clear Console</p>
+                <div class="function-label">Clears the console log</div>
+            </div>
             <button type="button" onclick="clearConsole()">Clear</button>
         </div>
     </div>
@@ -309,7 +402,6 @@
 
 <!-- JS -->
 <script>
-    // Tabs logic
     const tabButtons = document.querySelectorAll('.tab-button');
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -324,41 +416,22 @@
         });
     });
 
-    // Console functions
-    function logToConsole(message) {
-        const consoleLog = document.getElementById('console-log');
-        const newLine = document.createElement('div');
-        const time = new Date().toLocaleTimeString();
-        newLine.textContent = `[${time}] ${message}`;
-        consoleLog.appendChild(newLine);
-        consoleLog.scrollTop = consoleLog.scrollHeight;
-    }
+    const emulatorButtons = document.querySelectorAll('#emulator-toggle button');
+    emulatorButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            emulatorButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        });
+    });
 
     function clearConsole() {
         const consoleLog = document.getElementById('console-log');
         consoleLog.innerHTML = '';
-        logToConsole('Console cleared');
+        const time = new Date().toLocaleTimeString();
+        const newLine = document.createElement('div');
+        newLine.textContent = `[${time}] Console cleared`;
+        consoleLog.appendChild(newLine);
     }
-
-    // Example logging
-    const enabledButtons = document.querySelectorAll('button[name$="On"], button[name$="on"]');
-    const disableButtons = document.querySelectorAll('button[name$="Off"], button[name$="off"], button[name="aimbotdisable"], button[name="chamsmenu"], button[name="aimbotEnabled"]');
-
-    enabledButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            logToConsole(`${button.name} Enable clicked`);
-        });
-    });
-
-    disableButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            logToConsole(`${button.name} Disable clicked`);
-        });
-    });
-
-    document.querySelector('button[name="aimbotscan"]').addEventListener('click', () => {
-        logToConsole('Command: Load Headshot');
-    });
 </script>
 
 </body>
