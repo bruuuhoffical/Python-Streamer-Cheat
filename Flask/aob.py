@@ -2,6 +2,10 @@ from pymem import *
 from pymem.memory import read_bytes, write_bytes
 from pymem.pattern import pattern_scan_all
 import os
+import subprocess
+from pymem.process import inject_dll
+from pymem.exception import ProcessNotFound
+
 def mkp(aob: str):
     if '??' in aob:
         if aob.startswith("??"):
@@ -9,7 +13,7 @@ def mkp(aob: str):
             n = aob.replace(" ??", ".").replace(" ", "\\x")
             b = bytes(n.encode())
         else:
-            n = aob.replace(" ??", ".").replace(" ", "\\x")
+            n = aob.replace(" ??", ".").replace(" ", "\\x") 
             b = bytes(f"\\x{n}".encode())
         del n
         return b
@@ -25,7 +29,6 @@ def mkp(aob: str):
 
 def HEADLOAD():
     try:
-        # Open the process
         proc = Pymem("HD-Player")
     except pymem.exception.ProcessNotFound:
         return
@@ -33,9 +36,8 @@ def HEADLOAD():
     try:
         if proc:
             print("\033[31m[>]\033[0m Searching Entity...")
-            # Scan for entities
             global aimbot_addresses
-            entity_pattern = mkp("FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 A5 43")
+            entity_pattern = mkp("FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 A5 43")
             aimbot_addresses = pattern_scan_all(proc.process_handle, entity_pattern, return_multiple=True)
 
             if aimbot_addresses:
@@ -54,7 +56,6 @@ def HEADLOAD():
 
 def HEADLOADV2():
     try:
-        # Open the process
         proc = Pymem("HD-Player")
     except pymem.exception.ProcessNotFound:
         return
@@ -62,137 +63,122 @@ def HEADLOADV2():
     try:
         if proc:
             print("\033[31m[>]\033[0m Searching Entity...")
-            # Scan for entities
             global aimbot_addresses
-            entity_pattern = mkp("01 00 00 00 00 00 00 00 ?? ?? ?? ?? 00 00 00 00 ?? ?? ?? ?? 01 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 01")
+            entity_pattern = mkp("FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 A5 43")
             aimbot_addresses = pattern_scan_all(proc.process_handle, entity_pattern, return_multiple=True)
 
             if aimbot_addresses:
                 print("HeadShot V2 Loaded")
                 
             else:
-                print("\033[31m[!]\033[0m HeadShot Not Found")
+                print("\033[31m[!]\033[0m HeadShot V2 Not Found")
     
     except:
         print("")
     finally:
         if proc:
             proc.close_process()
-    return "HeadShot Loaded"
+    return "HeadShot V2 Loaded"
     
 
 
 def HEADON():
+    global original_value
+    original_value = []
+
     try:
         proc = Pymem("HD-Player")
-    
-        if proc:
-            global original_value
-            original_value = []
 
-            for current_entity in aimbot_addresses:
-                # Save original values before overwriting
-                original_2A = read_bytes(proc.process_handle, current_entity + 0x2A, 4)
-                original_AA = read_bytes(proc.process_handle, current_entity + 0x80, 4)
+        for current_entity in aimbot_addresses:
+            original_AA = read_bytes(proc.process_handle, current_entity + 0xAA, 4)
+            original_A6 = read_bytes(proc.process_handle, current_entity + 0xA6, 4)
+            original_value.append((current_entity, original_AA, original_A6))
 
-                original_value.append((current_entity, original_2A, original_AA))
+            print(f"[HEADON] Backing up entity {hex(current_entity)} AA={original_AA.hex()} A6={original_A6.hex()}")
 
-                # Read values from source offsets
-                value_2A = read_bytes(proc.process_handle, current_entity + 0x2A, 4)
-                value_AA = read_bytes(proc.process_handle, current_entity + 0x80, 4)
+           
+            write_bytes(proc.process_handle, current_entity + 0xA6, original_AA, len(original_AA))
 
-                # Write those values to destination offsets
-                write_bytes(proc.process_handle, current_entity + 0x26, value_2A, len(value_2A))    
-                write_bytes(proc.process_handle, current_entity + 0X7C, value_AA, len(value_AA))    
-
-    except pymem.exception.ProcessNotFound:
+    except ProcessNotFound:
         print("Process not found")
-        return
+        return "Process not found"
     finally:
-        if proc:
-            proc.close_process()
+        try: proc.close_process()
+        except: pass
 
     return "HeadShot Legit ON"
 
 def HEADONV2():
+    global original_value
+    original_value = []
+
     try:
         proc = Pymem("HD-Player")
-    
-        if proc:
-            global original_value
-            original_value = []
 
-            for current_entity in aimbot_addresses:
-                # Save original values before overwriting
-                original_2A = read_bytes(proc.process_handle, current_entity + 0x2A, 4)
-                original_AA = read_bytes(proc.process_handle, current_entity + 0x158, 4)
+        for current_entity in aimbot_addresses:
+            original_AA = read_bytes(proc.process_handle, current_entity + 0xAA, 4)
+            original_A6 = read_bytes(proc.process_handle, current_entity + 0xA6, 4)
+            original_value.append((current_entity, original_AA, original_A6))
 
-                original_value.append((current_entity, original_2A, original_AA))
+            print(f"[HEADONV2] Backing up entity {hex(current_entity)} AA={original_AA.hex()} A6={original_A6.hex()}")
 
-                # Read values from source offsets
-                value_2A = read_bytes(proc.process_handle, current_entity + 0x2A, 4)
-                value_AA = read_bytes(proc.process_handle, current_entity + 0x158, 4)
+           
+            write_bytes(proc.process_handle, current_entity + 0xA6, original_AA, len(original_AA))
 
-                # Write those values to destination offsets
-                write_bytes(proc.process_handle, current_entity + 0x26, value_2A, len(value_2A))    
-                write_bytes(proc.process_handle, current_entity + 0x154, value_AA, len(value_AA))    
-
-    except pymem.exception.ProcessNotFound:
+    except ProcessNotFound:
         print("Process not found")
-        return
+        return "Process not found"
     finally:
-        if proc:
-            proc.close_process()
+        try: proc.close_process()
+        except: pass
 
-    return "HeadShot Legit V2 ON"
+    return "HeadShot V2 ON"
 
 
 
 def HEADOFF():
+    if not original_value:
+        print("No original values stored. Run HEADON() first.")
+        return "Nothing to restore"
+
     try:
         proc = Pymem("HD-Player")
-        
-        if original_value:
-            for i in original_value:
-                entity_address = i[0]
-                original_2A = i[1]
-                original_AA = i[2]
 
-                # Restore original values to source offsets
-                write_bytes(proc.process_handle, entity_address + 0x2A, original_2A, len(original_2A))
-                write_bytes(proc.process_handle, entity_address + 0x80, original_AA, len(original_AA))
+        for entity_address, original_AA, original_A6 in original_value:
+            print(f"[HEADOFF] Restoring entity {hex(entity_address)} AA={original_AA.hex()} A6={original_A6.hex()}")
+            write_bytes(proc.process_handle, entity_address + 0xAA, original_AA, len(original_AA))
+            write_bytes(proc.process_handle, entity_address + 0xA6, original_A6, len(original_A6))
 
-    except pymem.exception.ProcessNotFound:
+    except ProcessNotFound:
         print("Process not found")
-        return
+        return "Process not found"
     finally:
-        if proc:
-            proc.close_process()
+        try: proc.close_process()
+        except: pass
 
     return "HeadShot Legit OFF"
 
 def HEADOFFV2():
+    if not original_value:
+        print("No original values stored. Run HEADON() first.")
+        return "Nothing to restore"
+
     try:
         proc = Pymem("HD-Player")
-        
-        if original_value:
-            for i in original_value:
-                entity_address = i[0]
-                original_2A = i[1]
-                original_AA = i[2]
 
-                # Restore original values to source offsets
-                write_bytes(proc.process_handle, entity_address + 0x2A, original_2A, len(original_2A))
-                write_bytes(proc.process_handle, entity_address + 0x158, original_AA, len(original_AA))
+        for entity_address, original_AA, original_A6 in original_value:
+            print(f"[HEADOFFV2] Restoring entity {hex(entity_address)} AA={original_AA.hex()} A6={original_A6.hex()}")
+            write_bytes(proc.process_handle, entity_address + 0xAA, original_AA, len(original_AA))
+            write_bytes(proc.process_handle, entity_address + 0xA6, original_A6, len(original_A6))
 
-    except pymem.exception.ProcessNotFound:
+    except ProcessNotFound:
         print("Process not found")
-        return
+        return "Process not found"
     finally:
-        if proc:
-            proc.close_process()
+        try: proc.close_process()
+        except: pass
 
-    return "HeadShot Legit V2 OFF"
+    return "HeadShot V2 OFF"
 
 
 def SniperScopeon():
@@ -566,7 +552,7 @@ def taskmanager():
 
         open_process = Pymem(process_name)
 
-        process.inject_dll(open_process.process_handle, dll_path_bytes)
+        inject_dll(open_process.process_handle, dll_path_bytes)
         print("Task Manager Injected DLL Successfully!") 
 
     except pymem.exception.ProcessNotFound:
@@ -585,7 +571,7 @@ def StartChams():
 
         open_process = Pymem(process_name)
 
-        process.inject_dll(open_process.process_handle, dll_path_bytes)
+        inject_dll(open_process.process_handle, dll_path_bytes)
         print("Chams Start Successfully!") 
 
     except pymem.exception.ProcessNotFound:
@@ -604,7 +590,7 @@ def ChamsMenuV1():
 
         open_process = Pymem(process_name)
 
-        process.inject_dll(open_process.process_handle, dll_path_bytes)
+        inject_dll(open_process.process_handle, dll_path_bytes)
         print("Chams Menu V1 Injected Successfully!") 
 
     except pymem.exception.ProcessNotFound:
@@ -623,7 +609,7 @@ def ChamsMenuV2():
 
         open_process = Pymem(process_name)
 
-        process.inject_dll(open_process.process_handle, dll_path_bytes)
+        inject_dll(open_process.process_handle, dll_path_bytes)
         print("Chams Menu V2 Injected Successfully!") 
 
     except pymem.exception.ProcessNotFound:
@@ -642,7 +628,7 @@ def ChamsGlow():
 
         open_process = Pymem(process_name)
 
-        process.inject_dll(open_process.process_handle, dll_path_bytes)
+        inject_dll(open_process.process_handle, dll_path_bytes)
         print("Chams Glow Injected Successfully!") 
 
     except pymem.exception.ProcessNotFound:
@@ -660,7 +646,7 @@ def ChamsBlue():
 
         open_process = Pymem(process_name)
 
-        process.inject_dll(open_process.process_handle, dll_path_bytes)
+        inject_dll(open_process.process_handle, dll_path_bytes)
         print("Chams Blue Injected Successfully!") 
 
     except pymem.exception.ProcessNotFound:
@@ -679,11 +665,13 @@ def HDRMap():
 
         open_process = Pymem(process_name)
 
-        process.inject_dll(open_process.process_handle, dll_path_bytes)
+        inject_dll(open_process.process_handle, dll_path_bytes)
         print("HDR Map Injected Successfully!") 
 
     except pymem.exception.ProcessNotFound:
         print("Bluestacks Not Found!")
     except Exception as e:
         print(f"Error: {e}")
+
+
 

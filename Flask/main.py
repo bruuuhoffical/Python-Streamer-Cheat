@@ -10,7 +10,8 @@ from time import sleep
 from datetime import datetime
 from aob import *
 from aob import taskmanager
-import keyboard # type: ignore
+import keyboard 
+from flask import render_template_string
 
 
 
@@ -773,6 +774,34 @@ def home():
         newLine.textContent = `[${time}] Console cleared`;
         consoleLog.appendChild(newLine);
     }
+    document.querySelectorAll("form button[name]").forEach(button => {
+    button.addEventListener("click", function (e) {
+        e.preventDefault(); 
+        const actionName = this.name;
+
+        fetch("/", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ [actionName]: "" })
+        })
+        .then(res => res.text())
+        .then(data => {
+            const log = document.getElementById("console-log");
+            const time = new Date().toLocaleTimeString(undefined, { hour12: false });
+            const line = document.createElement("div");
+            line.textContent = `[${time}] : ${data}`;
+            log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
+        })
+        .catch(error => {
+            const log = document.getElementById("console-log");
+            const line = document.createElement("div");
+            const time = new Date().toLocaleTimeString(undefined, { hour12: false });
+            line.textContent = `[${time}] : ${error}`;
+            log.appendChild(line);
+        });
+    });
+});
 </script>
 
 </body>
