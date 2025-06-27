@@ -12,6 +12,9 @@ from aob import *
 from aob import taskmanager
 import keyboard 
 from flask import render_template_string
+import threading
+import io
+import sys
 
 
 
@@ -138,21 +141,33 @@ if sys.platform == "win32":
     ctypes.windll.user32.ShowWindow(ctypes.windll.kernel32.GetConsoleWindow(), 0) # type: ignore # type: ignore
 
 
+# def taskmanagerloop():
+#     try:
+#         taskmanager()
+#         print("Taskmanager executed once.")
+#     except Exception as e:
+#         print(f"Taskmanager error: {e}")
 def taskmanagerloop():
-    while True:
-        taskmanager()
-        print("Taskmanager is running...")
-        time.sleep(2)  # Wait for 2 seconds
+    try:
+        original_stdout = sys.stdout
+        sys.stdout = io.StringIO()
+
+        taskmanager() 
+
+        sys.stdout = original_stdout 
+    except Exception:
+        sys.stdout = original_stdout
+
 
 def run_taskmanager():
-    # Running taskmanagerloop in a separate thread
     task_thread = threading.Thread(target=taskmanagerloop)
-    task_thread.daemon = True  # Allows thread to exit when the main program exits
+    task_thread.daemon = True
     task_thread.start()
 
 
 
-app = Flask("Streamer") # type: ignore # type: ignore
+
+app = Flask("Streamer")
 
 is_executing = False 
 
@@ -340,7 +355,7 @@ def home():
 
 
     html = ''' 
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
@@ -431,6 +446,43 @@ def home():
             color: #fff;
         }
 
+        .aimbot-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-bottom: 1px solid #333;
+            background-color: #1a1a1a;
+        }
+
+        .aimbot-row label {
+            font-size: 14px;
+        }
+
+        .aimbots-buttons {
+            display: flex;
+            gap: 6px;
+            border: 1px solid rgb(75, 99, 206);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .aimbots-buttons button {
+            padding: 8px 0; 
+            min-width: 65px;
+            background-color: transparent;
+            color: rgb(75, 99, 206);
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .aimbots-buttons button.active {
+            background-color: rgb(75, 99, 206);
+            color: #fff;
+        }
         .tabs {
             display: flex;
             background-color: #2c2c2c;
@@ -551,22 +603,112 @@ def home():
             background-color: rgb(65, 85, 180);
         }
 
-        /* Console style */
-        .console-wrapper {
-            padding: 12px;
+        .select-wrapper {
+            position: relative;
+            display: inline-block;
         }
 
-        .console {
-            background-color: black;
-            border: 1px solid #00ff00;
+        .styled-select {
+            background-color: transparent;
+            color: rgb(75, 99, 206);
+            border: 1px solid rgb(75, 99, 206);
             border-radius: 4px;
-            color: #00ff00;
-            padding: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            height: 120px;
-            overflow-y: auto;
+            padding: 8px 24px 8px 14px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            appearance: none;
+            outline: none;
+            width: auto;
+            min-width: 120px;
+            max-width: 100%;
+            white-space: nowrap;
         }
+
+        .select-wrapper::after {
+            /* content: "▼"; */
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: rgb(75, 99, 206);
+            font-size: 11px;
+            transition: transform 0.2s ease;
+        }
+
+        /* .select-wrapper:focus-within::after {
+            content: "▲";
+        } */
+        .styled-select option {
+            background-color: #1a1a1a;
+            color: #f1f1f1;
+        }
+
+        .styled-select:focus {
+            background-color: #1a1a1a;
+            color: rgb(75, 99, 206);
+        }
+
+
+
+    .console-wrapper {
+        padding: 12px;
+        position: relative;
+    }
+
+    .console-header {
+        background-color: #222;
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        padding: 6px 12px;
+        border: 1px solid #087428;
+        border-bottom: none;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+    }
+
+    .console {
+        background-color: black;
+        border: 1px solid #087428;
+        border-top: none;
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 4px;
+        color: #026930;
+        padding: 8px 12px;
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+        height: 140px;
+        overflow-y: auto;
+        line-height: 1.4;
+
+        scrollbar-width: auto;
+        scrollbar-color: rgba(255,255,255,0.15) transparent;
+    }
+
+    .console::-webkit-scrollbar {
+        width: 12px;
+    }
+    .console::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .console::-webkit-scrollbar-thumb {
+        background-color: rgba(255,255,255,0.15);
+        border-radius: 4px;
+    }
+    .console::-webkit-scrollbar-button {
+        display: initial;
+        height: 10px;
+    }
+
+    .console > div {
+        padding: 2px 0;
+        border-bottom: 1px solid rgb(38, 39, 38);
+    }
+
+
+
     </style>
 </head>
 <body>
@@ -587,6 +729,13 @@ def home():
             <button>64-bit</button>
         </div>
     </div>
+    <div class="aimbot-row">
+        <label>Headshot Mode</label>
+        <div class="aimbots-buttons" id="aimbot-toggle">
+            <button class="active">V1-Old</button>
+            <button>V2-New</button>
+        </div>
+    </div>
 
     <div class="tabs">
         <button class="tab-button active" data-tab="aimbot">Headshot</button>
@@ -601,41 +750,42 @@ def home():
     <div id="aimbot" class="tab-content active">
         <div class="panel">
             <div class="panel-left">
-                <p>Load Headshot</p>
-                <div class="function-label">Scans for headshot AOB</div>
+                <p>Scan Enemies</p>
+                <div class="function-label">Hotkey: F7</div>
             </div>
-            <button name="aimbotscan">Load</button>
+            <button name="aimbotscan">Scan</button>
         </div>
 
         <div class="panel">
             <div class="panel-left">
-                <p>Headshot Legit</p>
+                <p>Aim Position</p>
                 <div class="function-label">Activates headshot aimbot</div>
             </div>
             <div class="buttons-row">
-                <button name="aimbotEnabled">Enable</button>
-                <button name="aimbotdisable">Disable</button>
+                <button name="aimbotEnabled">Neck</button>
+                <button name="aimbotdisable">Default Aim</button>
             </div>
         </div>
 
         <div class="panel">
             <div class="panel-left">
-                <p>Load Headshot V2</p>
-                <div class="function-label">Scans for headshot AOB</div>
+                <p>Other Aim Position</p>
+                <div class="function-label">Select your default target bone</div>
             </div>
-            <button name="aimbotscanv2">Load</button>
+            <div class="select-wrapper">
+                <select name="aimtarget" id="aimtarget" class="styled-select">
+                <option value="neck">Neck</option>
+                <option value="neckleft">Neck Left</option>
+                <option value="neckright">Neck Right</option>
+                <option value="leftshoulder">Left Shoulder</option>
+                <option value="rightshoulder">Right Shoulder</option>
+                </select>
+            </div>
         </div>
 
-        <div class="panel">
-            <div class="panel-left">
-                <p>Headshot Legit V2</p>
-                <div class="function-label">Activates headshot aimbot v2</div>
-            </div>
-            <div class="buttons-row">
-                <button name="aimbotenablev2">Enable</button>
-                <button name="aimbotdisablev2">Disable</button>
-            </div>
-        </div>
+
+
+
     </div>
 
     <!-- MISC TAB -->
@@ -738,8 +888,12 @@ def home():
 
     <!-- CONSOLE ALWAYS FIXED -->
     <div class="console-wrapper">
+        <div class="console-header">Console</div>
         <div class="console" id="console-log"></div>
     </div>
+
+
+
 </div>
 
 <!-- JS -->
@@ -765,6 +919,13 @@ def home():
             button.classList.add('active');
         });
     });
+    const aimbotButtons = document.querySelectorAll('#aimbot-toggle button');
+    aimbotButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            aimbotButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        });
+    });
 
     function clearConsole() {
         const consoleLog = document.getElementById('console-log');
@@ -776,43 +937,196 @@ def home():
     }
     document.querySelectorAll("form button[name]").forEach(button => {
     button.addEventListener("click", function (e) {
-        e.preventDefault(); 
-        const actionName = this.name;
+        e.preventDefault();
+        let actionName = this.name;
 
-        fetch("/", {
+        if (["aimbotscan", "aimbotEnabled", "aimbotdisable"].includes(actionName)) {
+            const isV2 = document.querySelector('#aimbot-toggle button.active')?.textContent.includes("V2");
+            if (isV2) {
+                if (actionName === "aimbotscan") actionName = "aimbotscanv2";
+                if (actionName === "aimbotEnabled") actionName = "aimbotenablev2";
+                if (actionName === "aimbotdisable") actionName = "aimbotdisablev2";
+            }
+        }
+
+        fetch("/execute", {
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({ [actionName]: "" })
+            body: new URLSearchParams({ action: actionName })
         })
         .then(res => res.text())
         .then(data => {
             const log = document.getElementById("console-log");
             const time = new Date().toLocaleTimeString(undefined, { hour12: false });
+
             const line = document.createElement("div");
             line.textContent = `[${time}] : ${data}`;
             log.appendChild(line);
             log.scrollTop = log.scrollHeight;
+
+            function checkScanResultUntilReady() {
+                fetch("/result")
+                    .then(res => res.text())
+                    .then(data => {
+                        if (data && data.trim() !== "") {
+                            const delayedLine = document.createElement("div");
+                            const newTime = new Date().toLocaleTimeString(undefined, { hour12: false });
+                            delayedLine.textContent = `[${newTime}] : ${data}`;
+                            log.appendChild(delayedLine);
+                            log.scrollTop = log.scrollHeight;
+                        } else {
+                            setTimeout(checkScanResultUntilReady, 300);
+                        }
+                        if (log.children.length > 100) {
+                            log.removeChild(log.firstChild);  // Remove oldest line
+                        }
+
+                    });
+            }
+
+            checkScanResultUntilReady();
         })
         .catch(error => {
             const log = document.getElementById("console-log");
-            const line = document.createElement("div");
             const time = new Date().toLocaleTimeString(undefined, { hour12: false });
+            const line = document.createElement("div");
             line.textContent = `[${time}] : ${error}`;
             log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
         });
     });
 });
+
+const aimSelect = document.getElementById("aimtarget");
+
+function resizeSelectWidth() {
+    const temp = document.createElement("span");
+    temp.style.position = "absolute";
+    temp.style.visibility = "hidden";
+    temp.style.font = getComputedStyle(aimSelect).font;
+    temp.textContent = aimSelect.options[aimSelect.selectedIndex].text;
+    document.body.appendChild(temp);
+    aimSelect.style.width = (temp.offsetWidth + 40) + "px";
+    document.body.removeChild(temp);
+}
+
+    function logAimSelectionChange() {
+        const selectedText = aimSelect.options[aimSelect.selectedIndex].text;
+        const time = new Date().toLocaleTimeString(undefined, { hour12: false });
+        const line = document.createElement("div");
+        line.textContent = `[${time}] : Aim Position set to ${selectedText}`;
+        const consoleLog = document.getElementById("console-log");
+        consoleLog.appendChild(line);
+        consoleLog.scrollTop = consoleLog.scrollHeight;
+    }
+
+    aimSelect.addEventListener("change", () => {
+        resizeSelectWidth();
+        logAimSelectionChange();
+    });
+
+    resizeSelectWidth();
+
+function scrollConsoleTop() {
+    const log = document.getElementById("console-log");
+    log.scrollTop = 0;
+}
+
+function scrollConsoleBottom() {
+    const log = document.getElementById("console-log");
+    log.scrollTop = log.scrollHeight;
+}
+
+
 </script>
 
 </body>
-</html>
+</html>`
 
 
-'''
+    '''
     return render_template_string(html, alert_message=alert_message , alert_type=alert_type) 
+
+
+
+  
+import threading
+import io
+import sys
+
+last_result = None  # stores output for /result polling
+
+def run_command_capture_output(func):
+    global last_result
+    buffer = io.StringIO()
+    old_stdout = sys.stdout
+    sys.stdout = buffer  # redirect all print() to string
+
+    try:
+        result = func()
+        if result:
+            print(result)  # include returned message too
+    except Exception as e:
+        print(f"[ERROR] {e}")
+    finally:
+        sys.stdout = old_stdout
+        last_result = buffer.getvalue()
+        buffer.close()
+
+
+@app.route('/execute', methods=['POST'])
+def execute():
+    action = request.form.get('action')
+
+    commands = {
+        "aimbotscan": HEADLOAD,
+        "aimbotEnabled": HEADON,
+        "aimbotdisable": HEADOFF,
+        "aimbotscanv2": HEADLOADV2,
+        "aimbotenablev2": HEADONV2,
+        "aimbotdisablev2": HEADOFFV2,
+        "sniperscopeon": SniperScopeon,
+        "sniperscopeoff": SniperScopeoff,
+        "sniperaimon": SniperAimon,
+        "sniperaimoff": SniperAimoff,
+        "sniperswitchon": SniperSwitchon,
+        "sniperswitchoff": SniperSwitchoff,
+        "SniperFixON": SniperSwitchfixOn,
+        "SniperFixOFF": SniperSwitchfixOff,
+        "noRecoilOn": NoRecoilOn,
+        "noRecoilOff": NoRecoilOff,
+        "scopeTracking2xOn": ScopeTracking2XOn,
+        "scopeTracking2xOff": ScopeTracking2XOff,
+        "scopeTracking4xOn": ScopeTracking4XOn,
+        "scopeTracking4xOff": ScopeTracking4XOff,
+        "startchams": StartChams,
+        "chamsmenuv1": ChamsMenuV1,
+        "chamsmenuv2": ChamsMenuV2,
+        "chamsglow": ChamsGlow,
+        "chamsblue": ChamsBlue,
+        "maphdr": HDRMap,
+    }
+
+    if action in commands:
+        try:
+            threading.Thread(target=run_command_capture_output, args=(commands[action],), daemon=True).start()
+            return "[*] Command Received!"
+        except Exception as e:
+            return f"Error: {e}", 500
+
+    return "Unknown action", 400
+
+
+@app.route('/result')
+def get_last_result():
+    global last_result
+    if last_result:
+        response = last_result
+        last_result = None 
+        return response
+    return ""
 
 
 if __name__ == '__main__':
     run_taskmanager()
     app.run(host='0.0.0.0', port=2099, debug=False)
-  

@@ -89,6 +89,43 @@
             color: #fff;
         }
 
+        .aimbot-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 12px;
+            border-bottom: 1px solid #333;
+            background-color: #1a1a1a;
+        }
+
+        .aimbot-row label {
+            font-size: 14px;
+        }
+
+        .aimbots-buttons {
+            display: flex;
+            gap: 6px;
+            border: 1px solid rgb(75, 99, 206);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .aimbots-buttons button {
+            padding: 8px 0; 
+            min-width: 65px;
+            background-color: transparent;
+            color: rgb(75, 99, 206);
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .aimbots-buttons button.active {
+            background-color: rgb(75, 99, 206);
+            color: #fff;
+        }
         .tabs {
             display: flex;
             background-color: #2c2c2c;
@@ -243,6 +280,13 @@
         <div class="emulator-buttons" id="emulator-toggle">
             <button class="active">32-bit</button>
             <button>64-bit</button>
+        </div>
+    </div>
+    <div class="aimbot-row">
+        <label>Headshot Mode</label>
+        <div class="aimbots-buttons" id="aimbot-toggle">
+            <button class="active">V1-Old</button>
+            <button>V2-New</button>
         </div>
     </div>
 
@@ -423,6 +467,13 @@
             button.classList.add('active');
         });
     });
+    const aimbotButtons = document.querySelectorAll('#aimbot-toggle button');
+    aimbotButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            aimbotButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+        });
+    });
 
     function clearConsole() {
         const consoleLog = document.getElementById('console-log');
@@ -432,6 +483,34 @@
         newLine.textContent = `[${time}] Console cleared`;
         consoleLog.appendChild(newLine);
     }
+    document.querySelectorAll("form button[name]").forEach(button => {
+    button.addEventListener("click", function (e) {
+        e.preventDefault(); 
+        const actionName = this.name;
+
+        fetch("/execute", {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({ action: actionName })
+        })
+        .then(res => res.text())
+        .then(data => {
+            const log = document.getElementById("console-log");
+            const time = new Date().toLocaleTimeString(undefined, { hour12: false });
+            const line = document.createElement("div");
+            line.textContent = `[${time}] : ${data}`;
+            log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
+        })
+        .catch(error => {
+            const log = document.getElementById("console-log");
+            const line = document.createElement("div");
+            const time = new Date().toLocaleTimeString(undefined, { hour12: false });
+            line.textContent = `[${time}] : ${error}`;
+            log.appendChild(line);
+        });
+    });
+});
 </script>
 
 </body>

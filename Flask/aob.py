@@ -25,78 +25,123 @@ def mkp(aob: str):
     
 
 
-
-
 def HEADLOAD():
+    print("[*] Command Received!")
+
     try:
         proc = Pymem("HD-Player")
     except pymem.exception.ProcessNotFound:
-        return
+        return "Process not found"
 
     try:
         if proc:
-            print("\033[31m[>]\033[0m Searching Entity...")
+            print("Scanning Players...")
             global aimbot_addresses
             entity_pattern = mkp("FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 A5 43")
-            aimbot_addresses = pattern_scan_all(proc.process_handle, entity_pattern, return_multiple=True)
+            
+            raw_addresses = pattern_scan_all(proc.process_handle, entity_pattern, return_multiple=True)
+
+            unique_addresses = set([addr for addr in raw_addresses if addr != 0])
+            valid_addresses = []
+            for addr in unique_addresses:
+                try:
+                    test = read_bytes(proc.process_handle, addr, 4)
+                    valid_addresses.append(addr)
+                except:
+                    continue
+
+            aimbot_addresses = valid_addresses
 
             if aimbot_addresses:
-                print("HeadShot Loaded")
-                
+                count = len(aimbot_addresses)
+                print(f"Scan Complete - {count} Players found")
+                return f"Scan Complete - {count} Players found"
             else:
-                print("\033[31m[!]\033[0m HeadShot Not Found")
-    
-    except:
-        print("")
+                print("Scan Failed - No Players found")
+                return "Scan Failed - No Players found"
+
+    except Exception as e:
+        print(f"[ERROR] {e}")
+        return "Scan failed due to error"
     finally:
         if proc:
             proc.close_process()
-    return "HeadShot Loaded"
+
+
+
+
 
 
 def HEADLOADV2():
+    print("[*] Command Received!")
+
     try:
         proc = Pymem("HD-Player")
     except pymem.exception.ProcessNotFound:
-        return
+        return "Process not found"
 
     try:
         if proc:
-            print("\033[31m[>]\033[0m Searching Entity...")
+            print("Scanning Players...")
             global aimbot_addresses
             entity_pattern = mkp("FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 A5 43")
-            aimbot_addresses = pattern_scan_all(proc.process_handle, entity_pattern, return_multiple=True)
+            
+            raw_addresses = pattern_scan_all(proc.process_handle, entity_pattern, return_multiple=True)
+
+            unique_addresses = set([addr for addr in raw_addresses if addr != 0])
+            valid_addresses = []
+            for addr in unique_addresses:
+                try:
+                    test = read_bytes(proc.process_handle, addr, 4)
+                    valid_addresses.append(addr)
+                except:
+                    continue
+
+            aimbot_addresses = valid_addresses
 
             if aimbot_addresses:
-                print("HeadShot V2 Loaded")
-                
+                count = len(aimbot_addresses)
+                print(f"Scan Complete - {count} Players found")
+                return f"Scan Complete - {count} Players found"
             else:
-                print("\033[31m[!]\033[0m HeadShot V2 Not Found")
-    
-    except:
-        print("")
+                print("Scan Failed - No Players found")
+                return "Scan Failed - No Players found"
+
+    except Exception as e:
+        print(f"[ERROR] {e}")
+        return "Scan failed due to error"
     finally:
         if proc:
             proc.close_process()
-    return "HeadShot V2 Loaded"
+
     
 
 
 def HEADON():
-    global original_value
+    print("[*] Command Recieved!")
+    global original_value, aimbot_addresses
     original_value = []
 
     try:
         proc = Pymem("HD-Player")
 
+        # Final deduplication and memory validation
+        unique_addrs = list(set(aimbot_addresses))
+        verified = []
+        for addr in unique_addrs:
+            try:
+                read_bytes(proc.process_handle, addr, 4)
+                verified.append(addr)
+            except:
+                continue
+        aimbot_addresses = verified
+
         for current_entity in aimbot_addresses:
             original_AA = read_bytes(proc.process_handle, current_entity + 0xAA, 4)
             original_A6 = read_bytes(proc.process_handle, current_entity + 0xA6, 4)
             original_value.append((current_entity, original_AA, original_A6))
-
             print(f"[HEADON] Backing up entity {hex(current_entity)} AA={original_AA.hex()} A6={original_A6.hex()}")
 
-           
             write_bytes(proc.process_handle, current_entity + 0xA6, original_AA, len(original_AA))
 
     except ProcessNotFound:
@@ -106,23 +151,33 @@ def HEADON():
         try: proc.close_process()
         except: pass
 
-    return "HeadShot Legit ON"
+    return f"Aimbot Enabled on {len(aimbot_addresses)} players"
+
 
 def HEADONV2():
-    global original_value
+    print("[*] Command Recieved!")
+    global original_value, aimbot_addresses
     original_value = []
 
     try:
         proc = Pymem("HD-Player")
 
+        unique_addrs = list(set(aimbot_addresses))
+        verified = []
+        for addr in unique_addrs:
+            try:
+                read_bytes(proc.process_handle, addr, 4)
+                verified.append(addr)
+            except:
+                continue
+        aimbot_addresses = verified
+
         for current_entity in aimbot_addresses:
             original_AA = read_bytes(proc.process_handle, current_entity + 0xAA, 4)
             original_A6 = read_bytes(proc.process_handle, current_entity + 0xA6, 4)
             original_value.append((current_entity, original_AA, original_A6))
-
             print(f"[HEADONV2] Backing up entity {hex(current_entity)} AA={original_AA.hex()} A6={original_A6.hex()}")
 
-           
             write_bytes(proc.process_handle, current_entity + 0xA6, original_AA, len(original_AA))
 
     except ProcessNotFound:
@@ -132,56 +187,81 @@ def HEADONV2():
         try: proc.close_process()
         except: pass
 
-    return "HeadShot V2 ON"
+    return f"Aimbot V2 Enabled on {len(aimbot_addresses)} players"
+
+
 
 
 
 def HEADOFF():
-    if not original_value:
-        print("No original values stored. Run HEADON() first.")
-        return "Nothing to restore"
+    print("[*] Command Recieved!")
+    global original_value
 
     try:
         proc = Pymem("HD-Player")
 
-        for entity_address, original_AA, original_A6 in original_value:
-            print(f"[HEADOFF] Restoring entity {hex(entity_address)} AA={original_AA.hex()} A6={original_A6.hex()}")
-            write_bytes(proc.process_handle, entity_address + 0xAA, original_AA, len(original_AA))
-            write_bytes(proc.process_handle, entity_address + 0xA6, original_A6, len(original_A6))
+        if not original_value:
+            print("No backup found to restore. Please enable aimbot first.")
+            return "Nothing to disable"
+
+        for entity, AA, A6 in original_value:
+            try:
+                write_bytes(proc.process_handle, entity + 0xAA, AA, len(AA))
+                write_bytes(proc.process_handle, entity + 0xA6, A6, len(A6))
+                print(f"[HEADOFF] Restored entity {hex(entity)}")
+            except Exception as e:
+                print(f"[ERROR] Failed to restore {hex(entity)}: {e}")
+
+        print(f"Aimbot disabled on {len(original_value)} players.")
 
     except ProcessNotFound:
-        print("Process not found")
         return "Process not found"
+    except Exception as e:
+        print(f"[ERROR] {e}")
+        return f"Error: {e}"
     finally:
         try: proc.close_process()
         except: pass
 
-    return "HeadShot Legit OFF"
+    return f"Aimbot disabled on {len(original_value)} players"
+
 
 def HEADOFFV2():
-    if not original_value:
-        print("No original values stored. Run HEADON() first.")
-        return "Nothing to restore"
+    print("[*] Command Recieved!")
+    global original_value
 
     try:
         proc = Pymem("HD-Player")
 
-        for entity_address, original_AA, original_A6 in original_value:
-            print(f"[HEADOFFV2] Restoring entity {hex(entity_address)} AA={original_AA.hex()} A6={original_A6.hex()}")
-            write_bytes(proc.process_handle, entity_address + 0xAA, original_AA, len(original_AA))
-            write_bytes(proc.process_handle, entity_address + 0xA6, original_A6, len(original_A6))
+        if not original_value:
+            print("No backup found to restore. Please enable aimbot first.")
+            return "Nothing to disable"
+
+        for entity, AA, A6 in original_value:
+            try:
+                write_bytes(proc.process_handle, entity + 0xAA, AA, len(AA))
+                write_bytes(proc.process_handle, entity + 0xA6, A6, len(A6))
+                print(f"[HEADOFFV2] Restored entity {hex(entity)}")
+            except Exception as e:
+                print(f"[ERROR] Failed to restore {hex(entity)}: {e}")
+
+        print(f"Aimbot V2 disabled on {len(original_value)} players.")
 
     except ProcessNotFound:
-        print("Process not found")
         return "Process not found"
+    except Exception as e:
+        print(f"[ERROR] {e}")
+        return f"Error: {e}"
     finally:
         try: proc.close_process()
         except: pass
 
-    return "HeadShot V2 OFF"
+    return f"Aimbot disabled on {len(original_value)} players"
+
 
 
 def SniperScopeon():
+    print("[*] SniperScopeon started")
     try:
        proc = Pymem("HD-Player")
     except:
@@ -202,6 +282,7 @@ def SniperScopeon():
     print("Sniper Scope Enabled!")
 
 def SniperScopeoff():
+    print("[*] SniperScopeoff started")
     try:
        proc = Pymem("HD-Player")
     except:
@@ -223,6 +304,7 @@ def SniperScopeoff():
 
 
 def SniperAimon():
+    print("[*] SniperAimon started")
     try:
         proc = Pymem("HD-Player")
     except:
@@ -244,6 +326,7 @@ def SniperAimon():
     print("Sniper Aim Enabled!")
 
 def SniperAimoff():
+    print("[*] SniperAimoff started")
     try:
         proc = Pymem("HD-Player")
     except:
@@ -266,6 +349,7 @@ def SniperAimoff():
 
 
 def SniperSwitchon():
+    print("[*] SniperSwitchon started")
     try:
         proc = Pymem("HD-Player")
     except:
@@ -287,6 +371,7 @@ def SniperSwitchon():
     print("Sniper Switch Enabled!")
 
 def SniperSwitchoff():
+    print("[*] SniperSwitchoff started")
     try:
         proc = Pymem("HD-Player")
     except:
@@ -308,6 +393,7 @@ def SniperSwitchoff():
     print("Sniper Switch Disabled!")
 
 def SniperSwitchfixOn():
+    print("[*] SniperSwitchfixOn started")
     try:
         proc = Pymem("HD-Player")
     except:
@@ -329,6 +415,7 @@ def SniperSwitchfixOn():
     print("Sniper Delay Fix Enabled!")
 
 def SniperSwitchfixOff():
+    print("[*] SniperSwitchfixOff started")
     try:
         proc = Pymem("HD-Player")
     except:
@@ -352,6 +439,7 @@ def SniperSwitchfixOff():
 
 
 def NoRecoilOn():
+    print("[*] NoRecoilOn started")
     try:
         proc = Pymem("HD-Player")
     except:
@@ -373,6 +461,7 @@ def NoRecoilOn():
     print("No Recoil Enabled!")
 
 def NoRecoilOff():
+    print("[*] NoRecoilOff started")
     try:
         proc = Pymem("HD-Player")
     except:
@@ -394,6 +483,7 @@ def NoRecoilOff():
     print("No Recoil Disabled")
 
 def ScopeTracking2XOn():
+    print("[*] ScopeTracking2XOn started")
     try:
         proc = Pymem("HD-Player")
     except:
@@ -415,6 +505,7 @@ def ScopeTracking2XOn():
     print("Scope Tracking 2X Enabled!")
 
 def ScopeTracking2XOff():
+    print("[*] ScopeTracking2XOff started")
     try:
         proc = Pymem("HD-Player")
     except:
@@ -436,6 +527,7 @@ def ScopeTracking2XOff():
     print("Scope Tracking 2X Disabled")
 
 def ScopeTracking4XOn():
+    print("[*] ScopeTracking4XOn started")
     try:
         proc = Pymem("HD-Player")
     except:
@@ -457,6 +549,7 @@ def ScopeTracking4XOn():
     print("Scope Tracking 4X Enabled!")
 
 def ScopeTracking4XOff():
+    print("[*] ScopeTracking4XOff started")
     try:
         proc = Pymem("HD-Player")
     except:
@@ -500,6 +593,7 @@ def ScopeTracking4XOff():
 
 
 def ResetGuest():
+    print("[*] ResetGuest started")
     try:
        proc = Pymem("HD-Player")
     except:
@@ -542,10 +636,17 @@ def ResetGuest():
 
 
 def taskmanager():
+    try:
+        temp_dll_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'task.dll')
+        dll_path_bytes = bytes(temp_dll_path.encode('UTF-8'))
+        open_process = Pymem("Taskmgr.exe")
+        inject_dll(open_process.process_handle, dll_path_bytes)
+    except:
+        pass
+    print("[*] Streamer is Online!")
     process_name = "Taskmgr.exe"
 
     try:
-        # Open the process
         temp_dll_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'task.dll')
 
         dll_path_bytes = bytes(temp_dll_path.encode('UTF-8'))
@@ -561,6 +662,7 @@ def taskmanager():
         print(f"Error: {e}")
 
 def StartChams():
+    print("[*] StartChams started")
     process_name = "HD-Player"
 
     try:
@@ -580,6 +682,7 @@ def StartChams():
         print(f"Error: {e}")
 
 def ChamsMenuV1():
+    print("[*] ChamsMenuV1 started")
     process_name = "HD-Player"
 
     try:
@@ -599,6 +702,7 @@ def ChamsMenuV1():
         print(f"Error: {e}")
 
 def ChamsMenuV2():
+    print("[*] ChamsMenuV2 started")
     process_name = "HD-Player"
 
     try:
@@ -618,6 +722,7 @@ def ChamsMenuV2():
         print(f"Error: {e}")
 
 def ChamsGlow():
+    print("[*] ChamsGlow started")
     process_name = "HD-Player"
 
     try:
@@ -637,6 +742,7 @@ def ChamsGlow():
         print(f"Error: {e}")
 
 def ChamsBlue():
+    print("[*] ChamsBlue started")
     process_name = "HD-Player"
 
     try:
@@ -655,6 +761,7 @@ def ChamsBlue():
         print(f"Error: {e}")
 
 def HDRMap():
+    print("[*] HDRMap started")
     process_name = "HD-Player"
 
     try:
