@@ -170,7 +170,7 @@
         .panel {
             border: 1px solid #333;
             background-color: #222;
-            padding: 12px;
+            padding: 9.5px;
             margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
@@ -269,7 +269,6 @@
         }
 
         .select-wrapper::after {
-            /* content: "▼"; */
             position: absolute;
             right: 10px;
             top: 50%;
@@ -279,10 +278,6 @@
             font-size: 11px;
             transition: transform 0.2s ease;
         }
-
-        /* .select-wrapper:focus-within::after {
-            content: "▲";
-        } */
         .styled-select option {
             background-color: #1a1a1a;
             color: #f1f1f1;
@@ -358,10 +353,10 @@
 
 <div class="container">
     <h2>BRUUUH CHEATS</h2>
-    <h3>Streamer Panel 2.6</h3>
+    <h3>Streamers Choice 2.7</h3>
 
     <div class="status-panel">
-        Status: <span>Online</span> • v2.6 - -- ms<br>
+        Status: <span>Online</span> • v2.7 - -- ms<br>
         Connected to: BRUUUH CHEATS
     </div>
 
@@ -383,7 +378,7 @@
     <div class="tabs">
         <button class="tab-button active" data-tab="aimbot">Headshot</button>
         <button class="tab-button" data-tab="misc">Misc</button>
-        <button class="tab-button" data-tab="visuals">Visuals</button>
+        <button class="tab-button" data-tab="extras">Extras</button>
         <button class="tab-button" data-tab="settings">Settings</button>
     </div>
 
@@ -394,7 +389,7 @@
         <div class="panel">
             <div class="panel-left">
                 <p>Scan Enemies</p>
-                <div class="function-label">Hotkey: F7</div>
+                <div class="function-label">Hotkey: F4</div>
             </div>
             <button name="aimbotscan">Scan</button>
         </div>
@@ -402,7 +397,7 @@
         <div class="panel">
             <div class="panel-left">
                 <p>Aim Position</p>
-                <div class="function-label">Activates headshot aimbot</div>
+                <div class="function-label">F5 : Neck || F6 : Defaut Aim</div>
             </div>
             <div class="buttons-row">
                 <button name="aimbotEnabled">Neck</button>
@@ -426,6 +421,16 @@
             </div>
         </div>
 
+        <div class="panel">
+            <div class="panel-left">
+                <p>HeadShot Legit</p>
+                <div class="function-label">Hotkey : Right Mouse</div>
+            </div>
+            <div class="buttons-row">
+                <button name="aimbotEnabled">Enable</button>
+                <button name="aimbotdisable">Disable</button>
+            </div>
+        </div>
 
 
 
@@ -469,22 +474,8 @@
         
     </div>
 
-    <!-- VISUALS TAB -->
-    <div id="visuals" class="tab-content">
-        <div class="panel">
-            <div class="panel-left">
-                <p>Start Chams</p>
-                <div class="function-label">Starts Chams visual effect</div>
-            </div>
-            <button name="startchams">Start</button>
-        </div>
-        <div class="panel">
-            <div class="panel-left">
-                <p>Chams Menu V1</p>
-                <div class="function-label">Open Location Menu</div>
-            </div>
-            <button name="chamsmenuv1">Inject</button>
-        </div>
+    <!-- EXTRAS TAB -->
+    <div id="extras" class="tab-content">
         <div class="panel">
             <div class="panel-left">
                 <p>Chams Menu V2</p>
@@ -518,6 +509,13 @@
 
     <!-- SETTINGS TAB -->
     <div id="settings" class="tab-content">
+        <div class="panel">
+            <div class="panel-left">
+                <p>Chams Menu V2</p>
+                <div class="function-label">Hotkey to Show & Hide : INSERT</div>
+            </div>
+            <button name="chamsmenuv2">Enable</button>
+        </div>
         <div class="panel">
             <div class="panel-left">
                 <p>Clear Console</p>
@@ -575,7 +573,7 @@
         consoleLog.innerHTML = '';
         const time = new Date().toLocaleTimeString();
         const newLine = document.createElement('div');
-        newLine.textContent = `[${time}] Console cleared`;
+        newLine.textContent = `${time} Console cleared`;
         consoleLog.appendChild(newLine);
     }
     document.querySelectorAll("form button[name]").forEach(button => {
@@ -603,7 +601,7 @@
             const time = new Date().toLocaleTimeString(undefined, { hour12: false });
 
             const line = document.createElement("div");
-            line.textContent = `[${time}] : ${data}`;
+            line.textContent = `${time} : ${data}`;
             log.appendChild(line);
             log.scrollTop = log.scrollHeight;
 
@@ -620,6 +618,10 @@
                         } else {
                             setTimeout(checkScanResultUntilReady, 300);
                         }
+                        if (log.children.length > 100) {
+                            log.removeChild(log.firstChild); 
+                        }
+
                     });
             }
 
@@ -629,7 +631,7 @@
             const log = document.getElementById("console-log");
             const time = new Date().toLocaleTimeString(undefined, { hour12: false });
             const line = document.createElement("div");
-            line.textContent = `[${time}] : ${error}`;
+            line.textContent = `${time} : ${error}`;
             log.appendChild(line);
             log.scrollTop = log.scrollHeight;
         });
@@ -653,7 +655,7 @@ function resizeSelectWidth() {
         const selectedText = aimSelect.options[aimSelect.selectedIndex].text;
         const time = new Date().toLocaleTimeString(undefined, { hour12: false });
         const line = document.createElement("div");
-        line.textContent = `[${time}] : Aim Position set to ${selectedText}`;
+        line.textContent = `${time} : Aim Position >> ${selectedText}`;
         const consoleLog = document.getElementById("console-log");
         consoleLog.appendChild(line);
         consoleLog.scrollTop = consoleLog.scrollHeight;
@@ -676,6 +678,34 @@ function scrollConsoleBottom() {
     log.scrollTop = log.scrollHeight;
 }
 
+let lastResult = "";
+
+setInterval(() => {
+    fetch("/result")
+        .then(res => res.text())
+        .then(data => {
+            if (data && data.trim() !== "" && data !== lastResult) {
+                lastResult = data;
+                const logBox = document.getElementById("console-log");
+                const time = new Date().toLocaleTimeString(undefined, { hour12: false });
+
+                const lines = data.split('\n');
+                lines.forEach(text => {
+                    if (text.trim() !== "") {
+                        const line = document.createElement("div");
+                        line.textContent = `${time} : ${text}`;
+                        logBox.appendChild(line);
+                    }
+                });
+
+                logBox.scrollTop = logBox.scrollHeight;
+
+                while (logBox.children.length > 100) {
+                    logBox.removeChild(logBox.firstChild);
+                }
+            }
+        });
+}, 1000); 
 
 </script>
 

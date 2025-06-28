@@ -5,6 +5,12 @@ import os
 import subprocess
 from pymem.process import inject_dll
 from pymem.exception import ProcessNotFound
+from datetime import datetime
+
+def log(msg):
+    time = datetime.now().strftime("%H:%M:%S")
+    print(f"{msg}")
+    #print(f"{time} : {msg}")
 
 def mkp(aob: str):
     if '??' in aob:
@@ -26,16 +32,17 @@ def mkp(aob: str):
 
 
 def HEADLOAD():
-    print("[*] Command Received!")
+    #log("Command Received!")
 
     try:
         proc = Pymem("HD-Player")
     except pymem.exception.ProcessNotFound:
-        return "Process not found"
+        log("Process not found")
+        # return "Process not found"
 
     try:
         if proc:
-            print("Scanning Players...")
+            #log("Scanning Players...")
             global aimbot_addresses
             entity_pattern = mkp("FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 A5 43")
             
@@ -54,15 +61,15 @@ def HEADLOAD():
 
             if aimbot_addresses:
                 count = len(aimbot_addresses)
-                print(f"Scan Complete - {count} Players found")
-                return f"Scan Complete - {count} Players found"
+                log(f"Scan Complete")
+                #return f"Scan Complete - {count}/{count}"
             else:
-                print("Scan Failed - No Players found")
-                return "Scan Failed - No Players found"
+                log("Scan Failed")
+                #return "Scan Failed - No Players found"
 
     except Exception as e:
-        print(f"[ERROR] {e}")
-        return "Scan failed due to error"
+        log(f"Error : {e}")
+        #return "Scan failed due to error"
     finally:
         if proc:
             proc.close_process()
@@ -73,16 +80,17 @@ def HEADLOAD():
 
 
 def HEADLOADV2():
-    print("[*] Command Received!")
+    #log("Command Received!")
 
     try:
         proc = Pymem("HD-Player")
     except pymem.exception.ProcessNotFound:
-        return "Process not found"
+        log("Process not found")
+        #return "Process not found"
 
     try:
         if proc:
-            print("Scanning Players...")
+            #log("Scanning Players...")
             global aimbot_addresses
             entity_pattern = mkp("FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 FF FF FF FF FF FF FF FF 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? ?? 00 00 00 00 00 00 00 00 00 00 00 00 A5 43")
             
@@ -101,14 +109,14 @@ def HEADLOADV2():
 
             if aimbot_addresses:
                 count = len(aimbot_addresses)
-                print(f"Scan Complete - {count} Players found")
-                return f"Scan Complete - {count} Players found"
+                log(f"Scan Complete")
+                # return f"Scan Complete - {count}/{count}"
             else:
-                print("Scan Failed - No Players found")
-                return "Scan Failed - No Players found"
+                # log("Scan Failed - No Players found")
+                return "Scan Failed"
 
     except Exception as e:
-        print(f"[ERROR] {e}")
+        log(f"Error : {e}")
         return "Scan failed due to error"
     finally:
         if proc:
@@ -118,14 +126,13 @@ def HEADLOADV2():
 
 
 def HEADON():
-    print("[*] Command Recieved!")
+    #log("Command Recieved!")
     global original_value, aimbot_addresses
     original_value = []
 
     try:
         proc = Pymem("HD-Player")
 
-        # Final deduplication and memory validation
         unique_addrs = list(set(aimbot_addresses))
         verified = []
         for addr in unique_addrs:
@@ -136,26 +143,31 @@ def HEADON():
                 continue
         aimbot_addresses = verified
 
+        if not aimbot_addresses:
+            log("No Players Found")
+            return
+
         for current_entity in aimbot_addresses:
             original_AA = read_bytes(proc.process_handle, current_entity + 0xAA, 4)
             original_A6 = read_bytes(proc.process_handle, current_entity + 0xA6, 4)
             original_value.append((current_entity, original_AA, original_A6))
-            print(f"[HEADON] Backing up entity {hex(current_entity)} AA={original_AA.hex()} A6={original_A6.hex()}")
-
+            # log(f"[HEADON] Backing up entity {hex(current_entity)} AA={original_AA.hex()} A6={original_A6.hex()}")
             write_bytes(proc.process_handle, current_entity + 0xA6, original_AA, len(original_AA))
 
-    except ProcessNotFound:
-        print("Process not found")
-        return "Process not found"
-    finally:
-        try: proc.close_process()
-        except: pass
+        log("Aim Position >> Neck")
 
-    return f"Aimbot Enabled on {len(aimbot_addresses)} players"
+    except ProcessNotFound:
+        log("Process not found")
+    finally:
+        try:
+            proc.close_process()
+        except:
+            pass
+
 
 
 def HEADONV2():
-    print("[*] Command Recieved!")
+    #log("Command Recieved!")
     global original_value, aimbot_addresses
     original_value = []
 
@@ -172,497 +184,495 @@ def HEADONV2():
                 continue
         aimbot_addresses = verified
 
+        if not aimbot_addresses:
+            log("No Players Found")
+            return
+
         for current_entity in aimbot_addresses:
             original_AA = read_bytes(proc.process_handle, current_entity + 0xAA, 4)
             original_A6 = read_bytes(proc.process_handle, current_entity + 0xA6, 4)
             original_value.append((current_entity, original_AA, original_A6))
-            print(f"[HEADONV2] Backing up entity {hex(current_entity)} AA={original_AA.hex()} A6={original_A6.hex()}")
-
+            # log(f"[HEADON] Backing up entity {hex(current_entity)} AA={original_AA.hex()} A6={original_A6.hex()}")
             write_bytes(proc.process_handle, current_entity + 0xA6, original_AA, len(original_AA))
 
-    except ProcessNotFound:
-        print("Process not found")
-        return "Process not found"
-    finally:
-        try: proc.close_process()
-        except: pass
+        log("Aim Position >> Neck")
 
-    return f"Aimbot V2 Enabled on {len(aimbot_addresses)} players"
+    except ProcessNotFound:
+        log("Process not found")
+    finally:
+        try:
+            proc.close_process()
+        except:
+            pass
+
 
 
 
 
 
 def HEADOFF():
-    print("[*] Command Recieved!")
+    #log("Command Recieved!")
     global original_value
 
     try:
         proc = Pymem("HD-Player")
 
         if not original_value:
-            print("No backup found to restore. Please enable aimbot first.")
-            return "Nothing to disable"
+            log("No Players Found")
+            return
 
+        restored = set()
         for entity, AA, A6 in original_value:
+            if entity in restored:
+                continue
+            restored.add(entity)
             try:
                 write_bytes(proc.process_handle, entity + 0xAA, AA, len(AA))
                 write_bytes(proc.process_handle, entity + 0xA6, A6, len(A6))
-                print(f"[HEADOFF] Restored entity {hex(entity)}")
-            except Exception as e:
-                print(f"[ERROR] Failed to restore {hex(entity)}: {e}")
+            except:
+                log(f"Failed to restore entity {hex(entity)}")
 
-        print(f"Aimbot disabled on {len(original_value)} players.")
+        #log(f"Aimbot disabled on {len(restored)} players")
+        log("Aim Position >> Default")
 
     except ProcessNotFound:
-        return "Process not found"
+        log("Process not found")
     except Exception as e:
-        print(f"[ERROR] {e}")
-        return f"Error: {e}"
+        log(f"Error : {e}")
     finally:
-        try: proc.close_process()
-        except: pass
+        try:
+            proc.close_process()
+        except:
+            pass
 
-    return f"Aimbot disabled on {len(original_value)} players"
 
 
 def HEADOFFV2():
-    print("[*] Command Recieved!")
+    #log("Command Recieved!")
     global original_value
 
     try:
         proc = Pymem("HD-Player")
 
         if not original_value:
-            print("No backup found to restore. Please enable aimbot first.")
-            return "Nothing to disable"
+            log("No Players Found")
+            return
 
+        restored = set()
         for entity, AA, A6 in original_value:
+            if entity in restored:
+                continue
+            restored.add(entity)
             try:
                 write_bytes(proc.process_handle, entity + 0xAA, AA, len(AA))
                 write_bytes(proc.process_handle, entity + 0xA6, A6, len(A6))
-                print(f"[HEADOFFV2] Restored entity {hex(entity)}")
-            except Exception as e:
-                print(f"[ERROR] Failed to restore {hex(entity)}: {e}")
+            except:
+                log(f"Failed to restore entity {hex(entity)}")
 
-        print(f"Aimbot V2 disabled on {len(original_value)} players.")
+        #log(f"Aimbot V2 disabled on {len(restored)} players")
+        log("Aim Position >> Default")
 
     except ProcessNotFound:
-        return "Process not found"
+        log("Process not found")
     except Exception as e:
-        print(f"[ERROR] {e}")
-        return f"Error: {e}"
+        log(f"Error : {e}")
     finally:
-        try: proc.close_process()
-        except: pass
-
-    return f"Aimbot disabled on {len(original_value)} players"
+        try:
+            proc.close_process()
+        except:
+            pass
 
 
 
 def SniperScopeon():
-    print("[*] SniperScopeon started")
+    log("SniperScopeon started")
     try:
        proc = Pymem("HD-Player")
     except:
-       print("Bluestacks is not running.")
+       log("Bluestacks is not running.")
 
     try:
        if proc:
-        print("Enabling Sniper Scope", '\n'"Scanning...")
+        log("Enabling Sniper Scope", '\n'"Scanning...")
         value = pattern_scan_all(proc.process_handle, mkp(""), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
   
     
 
     if value :
       for addr in value :
         write_bytes(proc.process_handle, addr, bytes.fromhex(""),34)
-    print("Sniper Scope Enabled!")
+    log("Sniper Scope Enabled!")
 
 def SniperScopeoff():
-    print("[*] SniperScopeoff started")
+    log("SniperScopeoff started")
     try:
        proc = Pymem("HD-Player")
     except:
-       print("Bluestacks is not running.")
+       log("Bluestacks is not running.")
 
     try:
        if proc:
-        print("Disabling Sniper Scope", '\n'"Scanning...")
+        log("Disabling Sniper Scope", '\n'"Scanning...")
         value = pattern_scan_all(proc.process_handle, mkp(""), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
   
     
 
     if value :
       for addr in value :
         write_bytes(proc.process_handle, addr, bytes.fromhex(""),34)
-    print("Sniper Scope Disabled!")
+    log("Sniper Scope Disabled!")
 
 
 def SniperAimon():
-    print("[*] SniperAimon started")
+    log("SniperAimon started")
     try:
         proc = Pymem("HD-Player")
     except:
-        print("Bluestacks is not running.")
+        log("Bluestacks is not running.")
         return
 
     try:
         if proc:
-            print("Enabling Sniper Aim", '\n' "Scanning...")
+            log("Enabling Sniper Aim", '\n' "Scanning...")
             value = pattern_scan_all(proc.process_handle, mkp("01 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 CB 00 00 00"), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
         return
 
     if value:
         for addr in value:
             b = bytes.fromhex("00")
             write_bytes(proc.process_handle, addr, b, len(b))
-    print("Sniper Aim Enabled!")
+    log("Sniper Aim Enabled!")
 
 def SniperAimoff():
-    print("[*] SniperAimoff started")
+    log("SniperAimoff started")
     try:
         proc = Pymem("HD-Player")
     except:
-        print("Bluestacks is not running.")
+        log("Bluestacks is not running.")
         return
 
     try:
         if proc:
-            print("Disabling Sniper Aim", '\n' "Scanning...")
+            log("Disabling Sniper Aim", '\n' "Scanning...")
             value = pattern_scan_all(proc.process_handle, mkp("00"), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
         return
 
     if value:
         for addr in value:
             b = bytes.fromhex("01 00 00 00 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00 CB 00 00 00")
             write_bytes(proc.process_handle, addr, b, len(b))
-    print("Sniper Aim Disabled!")
+    log("Sniper Aim Disabled!")
 
 
 def SniperSwitchon():
-    print("[*] SniperSwitchon started")
+    log("SniperSwitchon started")
     try:
         proc = Pymem("HD-Player")
     except:
-        print("Bluestacks is not running.")
+        log("Bluestacks is not running.")
         return
 
     try:
         if proc:
-            print("Enabling Sniper Switch", '\n' "Scanning...")
+            log("Enabling Sniper Switch", '\n' "Scanning...")
             value = pattern_scan_all(proc.process_handle, mkp("B4 42 96 00 00 00 00 00 00 00 00 00 00 ?? 00 00 80 ?? 00 00 00 00 04 00 00 00 00 00 80 3F 00 00 20 41 00 00 34 42 01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 80 3F 8F C2 35 3F 9A 99 99 3F 00 00 80 3F 00 00 00 00 00 00 80 3F 00 00 80 3F 00 00 80 3F 00 00 00 00 00 00 00 00 00 00 00 3F 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80 3F"), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
         return
 
     if value:
         for addr in value:
             b = bytes.fromhex("B4 42 96 00 00 00 00 00 00 00 00 00 00 3c 00 00 80 00 00 00 00 00 04 00 00 00 00 00 80 3F")
             write_bytes(proc.process_handle, addr, b, len(b))
-    print("Sniper Switch Enabled!")
+    log("Sniper Switch Enabled!")
 
 def SniperSwitchoff():
-    print("[*] SniperSwitchoff started")
+    log("SniperSwitchoff started")
     try:
         proc = Pymem("HD-Player")
     except:
-        print("Bluestacks is not running.")
+        log("Bluestacks is not running.")
         return
 
     try:
         if proc:
-            print("Disabling Sniper Switch", '\n' "Scanning...")
+            log("Disabling Sniper Switch", '\n' "Scanning...")
             value = pattern_scan_all(proc.process_handle, mkp("B4 42 96 00 00 00 00 00 00 00 00 00 00 3c 00 00 80 00 00 00 00 00 04 00 00 00 00 00 80 3F"), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
         return
 
     if value:
         for addr in value:
             b = bytes.fromhex("B4 42 96 00 00 00 00 00 00 00 00 00 00 ?? 00 00 80 ?? 00 00 00 00 04 00 00 00 00 00 80 3F 00 00 20 41 00 00 34 42 01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 80 3F 8F C2 35 3F 9A 99 99 3F 00 00 80 3F 00 00 00 00 00 00 80 3F 00 00 80 3F 00 00 80 3F 00 00 00 00 00 00 00 00 00 00 00 3F 00 00 00 00 00 00 00 00 00 00 00 00 00 00 80 3F")
             write_bytes(proc.process_handle, addr, b, len(b))
-    print("Sniper Switch Disabled!")
+    log("Sniper Switch Disabled!")
 
 def SniperSwitchfixOn():
-    print("[*] SniperSwitchfixOn started")
+    log("SniperSwitchfixOn started")
     try:
         proc = Pymem("HD-Player")
     except:
-        print("Bluestacks is not running.")
+        log("Bluestacks is not running.")
         return
 
     try:
         if proc:
-            print("Enabling Sniper Delay Fix", '\n' "Scanning...")
+            log("Enabling Sniper Delay Fix", '\n' "Scanning...")
             value = pattern_scan_all(proc.process_handle, mkp("49 86 00 EB 00 00 00 EA 00 60"), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
         return
 
     if value:
         for addr in value:
             b = bytes.fromhex("49 86 00 EB 00 00 00 EA 00 59")
             write_bytes(proc.process_handle, addr, b, len(b))
-    print("Sniper Delay Fix Enabled!")
+    log("Sniper Delay Fix Enabled!")
 
 def SniperSwitchfixOff():
-    print("[*] SniperSwitchfixOff started")
+    log("SniperSwitchfixOff started")
     try:
         proc = Pymem("HD-Player")
     except:
-        print("Bluestacks is not running.")
+        log("Bluestacks is not running.")
         return
 
     try:
         if proc:
-            print("Disabling Sniper Delay Fix", '\n' "Scanning...")
+            log("Disabling Sniper Delay Fix", '\n' "Scanning...")
             value = pattern_scan_all(proc.process_handle, mkp("49 86 00 EB 00 00 00 EA 00 59"), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
         return
 
     if value:
         for addr in value:
             b = bytes.fromhex("49 86 00 EB 00 00 00 EA 00 60")
             write_bytes(proc.process_handle, addr, b, len(b))
-    print("Sniper Delay Fix Disabled!")
+    log("Sniper Delay Fix Disabled!")
 
 
 
 def NoRecoilOn():
-    print("[*] NoRecoilOn started")
+    log("NoRecoilOn started")
     try:
         proc = Pymem("HD-Player")
     except:
-        print("Bluestacks is not running.")
+        log("Bluestacks is not running.")
         return
 
     try:
         if proc:
-            print("Enabling No Recoil", '\n' "Scanning...")
-            value = pattern_scan_all(proc.process_handle, mkp("03 0A 9F ED 10 0A 01 EE 00 0A 81 EE 10 0A 10 EE 10 8C BD E8 00 00 7A 44 F0"), return_multiple=True)
+            log("Enabling No Recoil", '\n' "Scanning...")
+            value = pattern_scan_all(proc.process_handle, mkp("7A 44 F0 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0"), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
         return
 
     if value:
         for addr in value:
-            b = bytes.fromhex("03 0A 9F ED 10 0A 01 EE 00 0A 81 EE 10 0A 10 EE 10 8C BD E8 00 00 00 00 F0")
+            b = bytes.fromhex("7A FF F0 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0")
             write_bytes(proc.process_handle, addr, b, len(b))
-    print("No Recoil Enabled!")
+    log("No Recoil Enabled!")
 
 def NoRecoilOff():
-    print("[*] NoRecoilOff started")
+    log("NoRecoilOff started")
     try:
         proc = Pymem("HD-Player")
     except:
-        print("Bluestacks is not running.")
+        log("Bluestacks is not running.")
         return
 
     try:
         if proc:
-            print("Disabling No Recoil", '\n' "Scanning...")
-            value = pattern_scan_all(proc.process_handle, mkp("03 0A 9F ED 10 0A 01 EE 00 0A 81 EE 10 0A 10 EE 10 8C BD E8 00 00 00 00 F0"), return_multiple=True)
+            log("Disabling No Recoil", '\n' "Scanning...")
+            value = pattern_scan_all(proc.process_handle, mkp("7A FF F0 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0"), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
         return
 
     if value:
         for addr in value:
-            b = bytes.fromhex("03 0A 9F ED 10 0A 01 EE 00 0A 81 EE 10 0A 10 EE 10 8C BD E8 00 00 7A 44 F0")
+            b = bytes.fromhex("7A 44 F0 48 2D E9 10 B0 8D E2 02 8B 2D ED 08 D0")
             write_bytes(proc.process_handle, addr, b, len(b))
-    print("No Recoil Disabled")
+    log("No Recoil Disabled")
 
 def ScopeTracking2XOn():
-    print("[*] ScopeTracking2XOn started")
+    log("ScopeTracking2XOn started")
     try:
         proc = Pymem("HD-Player")
     except:
-        print("Bluestacks is not running.")
+        log("Bluestacks is not running.")
         return
 
     try:
         if proc:
-            print("Enabling Scope Tracking 2X", '\n' "Scanning...")
+            log("Enabling Scope Tracking 2X", '\n' "Scanning...")
             value = pattern_scan_all(proc.process_handle, mkp("A0 42 00 00 C0 3F 33 33 13 40 00 00 F0 3F 00 00 80 3F"), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
         return
 
     if value:
         for addr in value:
             b = bytes.fromhex("A0 42 00 00 C0 3F 33 33 13 40 00 00 F0 3F 00 00 29 5C")
             write_bytes(proc.process_handle, addr, b, len(b))
-    print("Scope Tracking 2X Enabled!")
+    log("Scope Tracking 2X Enabled!")
 
 def ScopeTracking2XOff():
-    print("[*] ScopeTracking2XOff started")
+    log("ScopeTracking2XOff started")
     try:
         proc = Pymem("HD-Player")
     except:
-        print("Bluestacks is not running.")
+        log("Bluestacks is not running.")
         return
 
     try:
         if proc:
-            print("Disabling Scope Tracking 2X", '\n' "Scanning...")
+            log("Disabling Scope Tracking 2X", '\n' "Scanning...")
             value = pattern_scan_all(proc.process_handle, mkp("A0 42 00 00 C0 3F 33 33 13 40 00 00 F0 3F 00 00 29 5C"), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
         return
 
     if value:
         for addr in value:
             b = bytes.fromhex("A0 42 00 00 C0 3F 33 33 13 40 00 00 F0 3F 00 00 80 3F")
             write_bytes(proc.process_handle, addr, b, len(b))
-    print("Scope Tracking 2X Disabled")
+    log("Scope Tracking 2X Disabled")
 
 def ScopeTracking4XOn():
-    print("[*] ScopeTracking4XOn started")
+    log("ScopeTracking4XOn started")
     try:
         proc = Pymem("HD-Player")
     except:
-        print("Bluestacks is not running.")
+        log("Bluestacks is not running.")
         return
 
     try:
         if proc:
-            print("Enabling Scope Tracking 4X", '\n' "Scanning...")
+            log("Enabling Scope Tracking 4X", '\n' "Scanning...")
             value = pattern_scan_all(proc.process_handle, mkp("00 F0 41 00 00 48 42 00 00 00 3F 33 33 13 40 00 00 D0 3F 00 00 80 3F 01 00"), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
         return
 
     if value:
         for addr in value:
             b = bytes.fromhex("00 F0 41 00 00 48 42 00 00 00 3F 33 33 13 40 00 00 D0 3F 00 00 80 5C 01 00")
             write_bytes(proc.process_handle, addr, b, len(b))
-    print("Scope Tracking 4X Enabled!")
+    log("Scope Tracking 4X Enabled!")
 
 def ScopeTracking4XOff():
-    print("[*] ScopeTracking4XOff started")
+    log("ScopeTracking4XOff started")
     try:
         proc = Pymem("HD-Player")
     except:
-        print("Bluestacks is not running.")
+        log("Bluestacks is not running.")
         return
 
     try:
         if proc:
-            print("Disabling Scope Tracking 4X", '\n' "Scanning...")
+            log("Disabling Scope Tracking 4X", '\n' "Scanning...")
             value = pattern_scan_all(proc.process_handle, mkp("00 F0 41 00 00 48 42 00 00 00 3F 33 33 13 40 00 00 D0 3F 00 00 80 5C 01 00"), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
         return
 
     if value:
         for addr in value:
             b = bytes.fromhex("00 F0 41 00 00 48 42 00 00 00 3F 33 33 13 40 00 00 D0 3F 00 00 80 3F 01 00")
             write_bytes(proc.process_handle, addr, b, len(b))
-    print("Scope Tracking 4X Disabled")
+    log("Scope Tracking 4X Disabled")
 
 
 
     try:
        proc = Pymem("HD-Player")
     except:
-       print("Bluestacks is not running.")
+       log("Bluestacks is not running.")
 
     try:
        if proc:
-        print("Disabling Head Tracking", '\n'"Scanning...")
+        log("Disabling Head Tracking", '\n'"Scanning...")
         value = pattern_scan_all(proc.process_handle, mkp(""), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
   
     
 
     if value :
       for addr in value :
         write_bytes(proc.process_handle, addr, bytes.fromhex(""),16)
-    print("Head Tracking Disabled")
+    log("Head Tracking Disabled")
 
 
 def ResetGuest():
-    print("[*] ResetGuest started")
+    log("ResetGuest started")
     try:
        proc = Pymem("HD-Player")
     except:
-       print("Bluestacks is not running.")
+       log("Bluestacks is not running.")
 
     try:
        if proc:
-        print("Enabling Reset Guest", '\n'"Scanning...")
+        log("Enabling Reset Guest", '\n'"Scanning...")
         value = pattern_scan_all(proc.process_handle, mkp(""), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
   
     
 
     if value :
       for addr in value :
         write_bytes(proc.process_handle, addr, bytes.fromhex(""),16)
-    print("Reset Guest Enabled!")
+    log("Reset Guest Enabled!")
 
     try:
        proc = Pymem("HD-Player")
     except:
-       print("Bluestacks is not running.")
+       log("Bluestacks is not running.")
 
     try:
        if proc:
-        print("Disabling Reset Guest", '\n'"Scanning...")
+        log("Disabling Reset Guest", '\n'"Scanning...")
         value = pattern_scan_all(proc.process_handle, mkp(""), return_multiple=True)
     except:
-        print("aob not found")
+        log("aob not found")
   
     
 
     if value :
       for addr in value :
         write_bytes(proc.process_handle, addr, bytes.fromhex(""),16)
-    print("Reset Guest Disabled!")
-
-
+    log("Reset Guest Disabled!")
 
 
 def taskmanager():
     try:
-        temp_dll_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'task.dll')
-        dll_path_bytes = bytes(temp_dll_path.encode('UTF-8'))
+        dll_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'task.dll')
         open_process = Pymem("Taskmgr.exe")
-        inject_dll(open_process.process_handle, dll_path_bytes)
+        inject_dll(open_process.process_handle, dll_path.encode('UTF-8'))
+        log("Streamer is Online!")
     except:
-        pass
-    print("[*] Streamer is Online!")
-    process_name = "Taskmgr.exe"
+        pass 
+    # Comment these:
+    # log("Streamer is Online!")
+    # log("Task Manager Injected DLL Successfully!")
 
-    try:
-        temp_dll_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'task.dll')
 
-        dll_path_bytes = bytes(temp_dll_path.encode('UTF-8'))
-
-        open_process = Pymem(process_name)
-
-        inject_dll(open_process.process_handle, dll_path_bytes)
-        print("Task Manager Injected DLL Successfully!") 
-
-    except pymem.exception.ProcessNotFound:
-        print("Task Manager not found!")
-    except Exception as e:
-        print(f"Error: {e}")
 
 def StartChams():
-    print("[*] StartChams started")
+    log("StartChams started")
     process_name = "HD-Player"
 
     try:
@@ -674,15 +684,15 @@ def StartChams():
         open_process = Pymem(process_name)
 
         inject_dll(open_process.process_handle, dll_path_bytes)
-        print("Chams Start Successfully!") 
+        log("Chams Start Successfully!") 
 
     except pymem.exception.ProcessNotFound:
-        print("Bluestacks Not Found!")
+        log("Bluestacks Not Found!")
     except Exception as e:
-        print(f"Error: {e}")
+        log(f"Error: {e}")
 
 def ChamsMenuV1():
-    print("[*] ChamsMenuV1 started")
+    log("ChamsMenuV1 started")
     process_name = "HD-Player"
 
     try:
@@ -694,15 +704,15 @@ def ChamsMenuV1():
         open_process = Pymem(process_name)
 
         inject_dll(open_process.process_handle, dll_path_bytes)
-        print("Chams Menu V1 Injected Successfully!") 
+        log("Chams Menu V1 Injected Successfully!") 
 
     except pymem.exception.ProcessNotFound:
-        print("Bluestacks Not Found!")
+        log("Bluestacks Not Found!")
     except Exception as e:
-        print(f"Error: {e}")
+        log(f"Error: {e}")
 
 def ChamsMenuV2():
-    print("[*] ChamsMenuV2 started")
+    log("ChamsMenuV2 started")
     process_name = "HD-Player"
 
     try:
@@ -714,19 +724,20 @@ def ChamsMenuV2():
         open_process = Pymem(process_name)
 
         inject_dll(open_process.process_handle, dll_path_bytes)
-        print("Chams Menu V2 Injected Successfully!") 
+        log("Chams Menu V2 Injected Successfully!") 
 
     except pymem.exception.ProcessNotFound:
-        print("Bluestacks Not Found!")
+        log("Bluestacks Not Found!")
     except Exception as e:
-        print(f"Error: {e}")
+        log(f"Error: {e}")
 
 def ChamsGlow():
-    print("[*] ChamsGlow started")
+    log("ChamsGlow started")
     process_name = "HD-Player"
 
     try:
         # Open the process
+        #log("Command Received!")
         temp_dll_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'GLOW.dll')
 
         dll_path_bytes = bytes(temp_dll_path.encode('UTF-8'))
@@ -734,15 +745,15 @@ def ChamsGlow():
         open_process = Pymem(process_name)
 
         inject_dll(open_process.process_handle, dll_path_bytes)
-        print("Chams Glow Injected Successfully!") 
+        log("Chams Glow Injected Successfully!") 
 
     except pymem.exception.ProcessNotFound:
-        print("Bluestacks Not Found!")
+        log("Process Not Found!")
     except Exception as e:
-        print(f"Error: {e}")
+        log(f"Error: {e}")
 
 def ChamsBlue():
-    print("[*] ChamsBlue started")
+    log("ChamsBlue started")
     process_name = "HD-Player"
 
     try:
@@ -753,15 +764,15 @@ def ChamsBlue():
         open_process = Pymem(process_name)
 
         inject_dll(open_process.process_handle, dll_path_bytes)
-        print("Chams Blue Injected Successfully!") 
+        log("Chams Blue Injected Successfully!") 
 
     except pymem.exception.ProcessNotFound:
-        print("Bluestacks Not Found!")
+        log("Bluestacks Not Found!")
     except Exception as e:
-        print(f"Error: {e}")
+        log(f"Error: {e}")
 
 def HDRMap():
-    print("[*] HDRMap started")
+    log("HDRMap started")
     process_name = "HD-Player"
 
     try:
@@ -773,12 +784,12 @@ def HDRMap():
         open_process = Pymem(process_name)
 
         inject_dll(open_process.process_handle, dll_path_bytes)
-        print("HDR Map Injected Successfully!") 
+        log("HDR Map Injected Successfully!") 
 
     except pymem.exception.ProcessNotFound:
-        print("Bluestacks Not Found!")
+        log("Bluestacks Not Found!")
     except Exception as e:
-        print(f"Error: {e}")
+        log(f"Error: {e}")
 
 
 

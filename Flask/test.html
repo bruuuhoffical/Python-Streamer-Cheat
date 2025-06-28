@@ -170,7 +170,7 @@
         .panel {
             border: 1px solid #333;
             background-color: #222;
-            padding: 12px;
+            padding: 9.5px;
             margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
@@ -246,32 +246,117 @@
             background-color: rgb(65, 85, 180);
         }
 
-        /* Console style */
-        .console-wrapper {
-            padding: 12px;
+        .select-wrapper {
+            position: relative;
+            display: inline-block;
         }
 
-        .console {
-            background-color: black;
-            border: 1px solid #00ff00;
+        .styled-select {
+            background-color: transparent;
+            color: rgb(75, 99, 206);
+            border: 1px solid rgb(75, 99, 206);
             border-radius: 4px;
-            color: #00ff00;
-            padding: 10px;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-            height: 120px;
-            overflow-y: auto;
+            padding: 8px 24px 8px 14px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            appearance: none;
+            outline: none;
+            width: auto;
+            min-width: 120px;
+            max-width: 100%;
+            white-space: nowrap;
         }
+
+        .select-wrapper::after {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: rgb(75, 99, 206);
+            font-size: 11px;
+            transition: transform 0.2s ease;
+        }
+        .styled-select option {
+            background-color: #1a1a1a;
+            color: #f1f1f1;
+        }
+
+        .styled-select:focus {
+            background-color: #1a1a1a;
+            color: rgb(75, 99, 206);
+        }
+
+
+
+    .console-wrapper {
+        padding: 12px;
+        position: relative;
+    }
+
+    .console-header {
+        background-color: #222;
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        padding: 6px 12px;
+        border: 1px solid #087428;
+        border-bottom: none;
+        border-top-left-radius: 4px;
+        border-top-right-radius: 4px;
+    }
+
+    .console {
+        background-color: black;
+        border: 1px solid #087428;
+        border-top: none;
+        border-bottom-left-radius: 4px;
+        border-bottom-right-radius: 4px;
+        color: #026930;
+        padding: 8px 12px;
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+        height: 140px;
+        overflow-y: auto;
+        line-height: 1.4;
+
+        scrollbar-width: auto;
+        scrollbar-color: rgba(255,255,255,0.15) transparent;
+    }
+
+    .console::-webkit-scrollbar {
+        width: 12px;
+    }
+    .console::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    .console::-webkit-scrollbar-thumb {
+        background-color: rgba(255,255,255,0.15);
+        border-radius: 4px;
+    }
+    .console::-webkit-scrollbar-button {
+        display: initial;
+        height: 10px;
+    }
+
+    .console > div {
+        padding: 2px 0;
+        border-bottom: 1px solid rgb(38, 39, 38);
+    }
+
+
+
     </style>
 </head>
 <body>
 
 <div class="container">
     <h2>BRUUUH CHEATS</h2>
-    <h3>Streamer Panel 2.6</h3>
+    <h3>Streamers Choice 2.7</h3>
 
     <div class="status-panel">
-        Status: <span>Online</span> • v2.6 - -- ms<br>
+        Status: <span>Online</span> • v2.7 - -- ms<br>
         Connected to: BRUUUH CHEATS
     </div>
 
@@ -293,7 +378,7 @@
     <div class="tabs">
         <button class="tab-button active" data-tab="aimbot">Headshot</button>
         <button class="tab-button" data-tab="misc">Misc</button>
-        <button class="tab-button" data-tab="visuals">Visuals</button>
+        <button class="tab-button" data-tab="extras">Extras</button>
         <button class="tab-button" data-tab="settings">Settings</button>
     </div>
 
@@ -303,16 +388,43 @@
     <div id="aimbot" class="tab-content active">
         <div class="panel">
             <div class="panel-left">
-                <p>Load Headshot</p>
-                <div class="function-label">Scans for headshot AOB</div>
+                <p>Scan Enemies</p>
+                <div class="function-label">Hotkey: F4</div>
             </div>
-            <button name="aimbotscan">Load</button>
+            <button name="aimbotscan">Scan</button>
         </div>
 
         <div class="panel">
             <div class="panel-left">
-                <p>Headshot Legit</p>
-                <div class="function-label">Activates headshot aimbot</div>
+                <p>Aim Position</p>
+                <div class="function-label">F5 : Neck || F6 : Defaut Aim</div>
+            </div>
+            <div class="buttons-row">
+                <button name="aimbotEnabled">Neck</button>
+                <button name="aimbotdisable">Default Aim</button>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-left">
+                <p>Other Aim Position</p>
+                <div class="function-label">Select your default target bone</div>
+            </div>
+            <div class="select-wrapper">
+                <select name="aimtarget" id="aimtarget" class="styled-select">
+                <option value="neck">Neck</option>
+                <option value="neckleft">Neck Left</option>
+                <option value="neckright">Neck Right</option>
+                <option value="leftshoulder">Left Shoulder</option>
+                <option value="rightshoulder">Right Shoulder</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="panel">
+            <div class="panel-left">
+                <p>HeadShot Legit</p>
+                <div class="function-label">Hotkey : Right Mouse</div>
             </div>
             <div class="buttons-row">
                 <button name="aimbotEnabled">Enable</button>
@@ -320,24 +432,8 @@
             </div>
         </div>
 
-        <div class="panel">
-            <div class="panel-left">
-                <p>Load Headshot V2</p>
-                <div class="function-label">Scans for headshot AOB</div>
-            </div>
-            <button name="aimbotscanv2">Load</button>
-        </div>
 
-        <div class="panel">
-            <div class="panel-left">
-                <p>Headshot Legit V2</p>
-                <div class="function-label">Activates headshot aimbot v2</div>
-            </div>
-            <div class="buttons-row">
-                <button name="aimbotenablev2">Enable</button>
-                <button name="aimbotdisablev2">Disable</button>
-            </div>
-        </div>
+
     </div>
 
     <!-- MISC TAB -->
@@ -378,22 +474,8 @@
         
     </div>
 
-    <!-- VISUALS TAB -->
-    <div id="visuals" class="tab-content">
-        <div class="panel">
-            <div class="panel-left">
-                <p>Start Chams</p>
-                <div class="function-label">Starts Chams visual effect</div>
-            </div>
-            <button name="startchams">Start</button>
-        </div>
-        <div class="panel">
-            <div class="panel-left">
-                <p>Chams Menu V1</p>
-                <div class="function-label">Open Location Menu</div>
-            </div>
-            <button name="chamsmenuv1">Inject</button>
-        </div>
+    <!-- EXTRAS TAB -->
+    <div id="extras" class="tab-content">
         <div class="panel">
             <div class="panel-left">
                 <p>Chams Menu V2</p>
@@ -429,6 +511,13 @@
     <div id="settings" class="tab-content">
         <div class="panel">
             <div class="panel-left">
+                <p>Chams Menu V2</p>
+                <div class="function-label">Hotkey to Show & Hide : INSERT</div>
+            </div>
+            <button name="chamsmenuv2">Enable</button>
+        </div>
+        <div class="panel">
+            <div class="panel-left">
                 <p>Clear Console</p>
                 <div class="function-label">Clears the console log</div>
             </div>
@@ -440,8 +529,12 @@
 
     <!-- CONSOLE ALWAYS FIXED -->
     <div class="console-wrapper">
+        <div class="console-header">Console</div>
         <div class="console" id="console-log"></div>
     </div>
+
+
+
 </div>
 
 <!-- JS -->
@@ -480,13 +573,22 @@
         consoleLog.innerHTML = '';
         const time = new Date().toLocaleTimeString();
         const newLine = document.createElement('div');
-        newLine.textContent = `[${time}] Console cleared`;
+        newLine.textContent = `${time} Console cleared`;
         consoleLog.appendChild(newLine);
     }
     document.querySelectorAll("form button[name]").forEach(button => {
     button.addEventListener("click", function (e) {
-        e.preventDefault(); 
-        const actionName = this.name;
+        e.preventDefault();
+        let actionName = this.name;
+
+        if (["aimbotscan", "aimbotEnabled", "aimbotdisable"].includes(actionName)) {
+            const isV2 = document.querySelector('#aimbot-toggle button.active')?.textContent.includes("V2");
+            if (isV2) {
+                if (actionName === "aimbotscan") actionName = "aimbotscanv2";
+                if (actionName === "aimbotEnabled") actionName = "aimbotenablev2";
+                if (actionName === "aimbotdisable") actionName = "aimbotdisablev2";
+            }
+        }
 
         fetch("/execute", {
             method: "POST",
@@ -497,20 +599,114 @@
         .then(data => {
             const log = document.getElementById("console-log");
             const time = new Date().toLocaleTimeString(undefined, { hour12: false });
+
             const line = document.createElement("div");
-            line.textContent = `[${time}] : ${data}`;
+            line.textContent = `${time} : ${data}`;
             log.appendChild(line);
             log.scrollTop = log.scrollHeight;
+
+            function checkScanResultUntilReady() {
+                fetch("/result")
+                    .then(res => res.text())
+                    .then(data => {
+                        if (data && data.trim() !== "") {
+                            const delayedLine = document.createElement("div");
+                            const newTime = new Date().toLocaleTimeString(undefined, { hour12: false });
+                            delayedLine.textContent = `[${newTime}] : ${data}`;
+                            log.appendChild(delayedLine);
+                            log.scrollTop = log.scrollHeight;
+                        } else {
+                            setTimeout(checkScanResultUntilReady, 300);
+                        }
+                        if (log.children.length > 100) {
+                            log.removeChild(log.firstChild); 
+                        }
+
+                    });
+            }
+
+            checkScanResultUntilReady();
         })
         .catch(error => {
             const log = document.getElementById("console-log");
-            const line = document.createElement("div");
             const time = new Date().toLocaleTimeString(undefined, { hour12: false });
-            line.textContent = `[${time}] : ${error}`;
+            const line = document.createElement("div");
+            line.textContent = `${time} : ${error}`;
             log.appendChild(line);
+            log.scrollTop = log.scrollHeight;
         });
     });
 });
+
+const aimSelect = document.getElementById("aimtarget");
+
+function resizeSelectWidth() {
+    const temp = document.createElement("span");
+    temp.style.position = "absolute";
+    temp.style.visibility = "hidden";
+    temp.style.font = getComputedStyle(aimSelect).font;
+    temp.textContent = aimSelect.options[aimSelect.selectedIndex].text;
+    document.body.appendChild(temp);
+    aimSelect.style.width = (temp.offsetWidth + 40) + "px";
+    document.body.removeChild(temp);
+}
+
+    function logAimSelectionChange() {
+        const selectedText = aimSelect.options[aimSelect.selectedIndex].text;
+        const time = new Date().toLocaleTimeString(undefined, { hour12: false });
+        const line = document.createElement("div");
+        line.textContent = `${time} : Aim Position >> ${selectedText}`;
+        const consoleLog = document.getElementById("console-log");
+        consoleLog.appendChild(line);
+        consoleLog.scrollTop = consoleLog.scrollHeight;
+    }
+
+    aimSelect.addEventListener("change", () => {
+        resizeSelectWidth();
+        logAimSelectionChange();
+    });
+
+    resizeSelectWidth();
+
+function scrollConsoleTop() {
+    const log = document.getElementById("console-log");
+    log.scrollTop = 0;
+}
+
+function scrollConsoleBottom() {
+    const log = document.getElementById("console-log");
+    log.scrollTop = log.scrollHeight;
+}
+
+let lastResult = "";
+
+setInterval(() => {
+    fetch("/result")
+        .then(res => res.text())
+        .then(data => {
+            if (data && data.trim() !== "" && data !== lastResult) {
+                lastResult = data;
+                const logBox = document.getElementById("console-log");
+                const time = new Date().toLocaleTimeString(undefined, { hour12: false });
+
+                const lines = data.split('\n');
+                lines.forEach(text => {
+                    if (text.trim() !== "") {
+                        const line = document.createElement("div");
+                        line.textContent = `${time} : ${text}`;
+                        logBox.appendChild(line);
+                    }
+                });
+
+                logBox.scrollTop = logBox.scrollHeight;
+
+                while (logBox.children.length > 100) {
+                    logBox.removeChild(logBox.firstChild);
+                }
+            }
+        });
+}, 1000); 
+
 </script>
 
 </body>
