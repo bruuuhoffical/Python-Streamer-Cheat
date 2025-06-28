@@ -30,14 +30,8 @@ def clear():
         os.system("clear && printf '\e[3J'")  # clear console
         os.system('''echo - n - e "\033]0;Python Example\007"''')  # change title
 
-        print("Welcome to BRUUUH CHEATS")
-        print("Streamers Choice 2.7")
-        print("")
-        print("Connecting to BRUUUH SERVER...")
-        print("Connected")
-        print("")
-        print("==============================")
-        print("")
+print("Initializing")
+
 
 def getchecksum():
     md5_hash = hashlib.md5()    
@@ -65,8 +59,8 @@ try:
             authfile = json.load(file) # type: ignore
         if authfile.get("authusername") == "": # Checks if the authusername is empty or not
             print("""
-                    1. Login
-                    2. Register
+1. Login
+2. Register
             """)
             ans = input("Select Option: ")  # Skipping auto-login because auth file is empty
             if ans == "1": 
@@ -177,14 +171,13 @@ app = Flask("Streamer")
 
 is_executing = False 
 
-from main import run_command_capture_output
 
 def handle_F4():
     global is_executing
     if not is_executing:
-        is_executing = True
-        run_command_capture_output(lambda: (log("F4 : Command Received"), HEADLOAD()))
-        is_executing = False
+        is_executing = True 
+        HEADLOAD()  
+        is_executing = False 
 
 def listen_for_f4():
     
@@ -195,8 +188,8 @@ threading.Thread(target=listen_for_f4, daemon=True).start()
 def handle_F5():
     global is_executing
     if not is_executing:
-        is_executing = True
-        run_command_capture_output(lambda: (log("F5 : Command Received"), HEADON()))
+        is_executing = True 
+        HEADON()  
         is_executing = False 
 
 def listen_for_f5():
@@ -208,9 +201,9 @@ threading.Thread(target=listen_for_f5, daemon=True).start()
 def handle_F6():
     global is_executing
     if not is_executing:
-        is_executing = True
-        run_command_capture_output(lambda: (log("F6 : Command Received"), HEADOFF()))
-        is_executing = False
+        is_executing = True 
+        HEADOFF()  
+        is_executing = False 
 
 def listen_for_f6():
     
@@ -534,7 +527,7 @@ def home():
         .panel {
             border: 1px solid #333;
             background-color: #222;
-            padding: 9.5px;
+            padding: 12px;
             margin-bottom: 12px;
             display: flex;
             justify-content: space-between;
@@ -633,6 +626,7 @@ def home():
         }
 
         .select-wrapper::after {
+            /* content: "▼"; */
             position: absolute;
             right: 10px;
             top: 50%;
@@ -642,6 +636,10 @@ def home():
             font-size: 11px;
             transition: transform 0.2s ease;
         }
+
+        /* .select-wrapper:focus-within::after {
+            content: "▲";
+        } */
         .styled-select option {
             background-color: #1a1a1a;
             color: #f1f1f1;
@@ -717,10 +715,10 @@ def home():
 
 <div class="container">
     <h2>BRUUUH CHEATS</h2>
-    <h3>Streamers Choice 2.7</h3>
+    <h3>Streamer Panel 2.6</h3>
 
     <div class="status-panel">
-        Status: <span>Online</span> • v2.7 - -- ms<br>
+        Status: <span>Online</span> • v2.6 - -- ms<br>
         Connected to: BRUUUH CHEATS
     </div>
 
@@ -742,7 +740,7 @@ def home():
     <div class="tabs">
         <button class="tab-button active" data-tab="aimbot">Headshot</button>
         <button class="tab-button" data-tab="misc">Misc</button>
-        <button class="tab-button" data-tab="extras">Extras</button>
+        <button class="tab-button" data-tab="visuals">Visuals</button>
         <button class="tab-button" data-tab="settings">Settings</button>
     </div>
 
@@ -753,7 +751,7 @@ def home():
         <div class="panel">
             <div class="panel-left">
                 <p>Scan Enemies</p>
-                <div class="function-label">Hotkey: F4</div>
+                <div class="function-label">Hotkey: F7</div>
             </div>
             <button name="aimbotscan">Scan</button>
         </div>
@@ -761,7 +759,7 @@ def home():
         <div class="panel">
             <div class="panel-left">
                 <p>Aim Position</p>
-                <div class="function-label">F5 : Neck || F6 : Defaut Aim</div>
+                <div class="function-label">Activates headshot aimbot</div>
             </div>
             <div class="buttons-row">
                 <button name="aimbotEnabled">Neck</button>
@@ -785,16 +783,6 @@ def home():
             </div>
         </div>
 
-        <div class="panel">
-            <div class="panel-left">
-                <p>HeadShot Legit</p>
-                <div class="function-label">Hotkey : Right Mouse</div>
-            </div>
-            <div class="buttons-row">
-                <button name="aimbotEnabled">Enable</button>
-                <button name="aimbotdisable">Disable</button>
-            </div>
-        </div>
 
 
 
@@ -838,8 +826,22 @@ def home():
         
     </div>
 
-    <!-- EXTRAS TAB -->
-    <div id="extras" class="tab-content">
+    <!-- VISUALS TAB -->
+    <div id="visuals" class="tab-content">
+        <div class="panel">
+            <div class="panel-left">
+                <p>Start Chams</p>
+                <div class="function-label">Starts Chams visual effect</div>
+            </div>
+            <button name="startchams">Start</button>
+        </div>
+        <div class="panel">
+            <div class="panel-left">
+                <p>Chams Menu V1</p>
+                <div class="function-label">Open Location Menu</div>
+            </div>
+            <button name="chamsmenuv1">Inject</button>
+        </div>
         <div class="panel">
             <div class="panel-left">
                 <p>Chams Menu V2</p>
@@ -873,13 +875,6 @@ def home():
 
     <!-- SETTINGS TAB -->
     <div id="settings" class="tab-content">
-        <div class="panel">
-            <div class="panel-left">
-                <p>Chams Menu V2</p>
-                <div class="function-label">Hotkey to Show & Hide : INSERT</div>
-            </div>
-            <button name="chamsmenuv2">Enable</button>
-        </div>
         <div class="panel">
             <div class="panel-left">
                 <p>Clear Console</p>
@@ -976,14 +971,14 @@ def home():
                         if (data && data.trim() !== "") {
                             const delayedLine = document.createElement("div");
                             const newTime = new Date().toLocaleTimeString(undefined, { hour12: false });
-                            delayedLine.textContent = `[${newTime}] : ${data}`;
+                            delayedLine.textContent = `${newTime} : ${data}`;
                             log.appendChild(delayedLine);
                             log.scrollTop = log.scrollHeight;
                         } else {
                             setTimeout(checkScanResultUntilReady, 300);
                         }
                         if (log.children.length > 100) {
-                            log.removeChild(log.firstChild); 
+                            log.removeChild(log.firstChild);  // Remove oldest line
                         }
 
                     });
@@ -1019,7 +1014,7 @@ function resizeSelectWidth() {
         const selectedText = aimSelect.options[aimSelect.selectedIndex].text;
         const time = new Date().toLocaleTimeString(undefined, { hour12: false });
         const line = document.createElement("div");
-        line.textContent = `${time} : Aim Position >> ${selectedText}`;
+        line.textContent = `${time} : Aim Position set to ${selectedText}`;
         const consoleLog = document.getElementById("console-log");
         consoleLog.appendChild(line);
         consoleLog.scrollTop = consoleLog.scrollHeight;
@@ -1042,39 +1037,11 @@ function scrollConsoleBottom() {
     log.scrollTop = log.scrollHeight;
 }
 
-let lastResult = "";
-
-setInterval(() => {
-    fetch("/result")
-        .then(res => res.text())
-        .then(data => {
-            if (data && data.trim() !== "" && data !== lastResult) {
-                lastResult = data;
-                const logBox = document.getElementById("console-log");
-                const time = new Date().toLocaleTimeString(undefined, { hour12: false });
-
-                const lines = data.split('\n');
-                lines.forEach(text => {
-                    if (text.trim() !== "") {
-                        const line = document.createElement("div");
-                        line.textContent = `${time} : ${text}`;
-                        logBox.appendChild(line);
-                    }
-                });
-
-                logBox.scrollTop = logBox.scrollHeight;
-
-                while (logBox.children.length > 100) {
-                    logBox.removeChild(logBox.firstChild);
-                }
-            }
-        });
-}, 1000); 
 
 </script>
 
 </body>
-</html>
+</html>`
 
 
     '''
@@ -1143,7 +1110,8 @@ def execute():
     if action in commands:
         try:
             threading.Thread(target=run_command_capture_output, args=(commands[action],), daemon=True).start()
-            return "Command Received!"
+            return "Command Received"
+            #return "Please Wait..."
         except Exception as e:
             return f"Error: {e}", 500
 
@@ -1153,11 +1121,11 @@ def execute():
 @app.route('/result')
 def get_last_result():
     global last_result
-    if last_result and str(last_result).strip():
+    if last_result:
         response = last_result
         last_result = None 
         return response
-    return "", 204
+    return ""
 
 
 if __name__ == '__main__':
